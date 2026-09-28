@@ -18,7 +18,10 @@
     --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace, "Noto Sans KR";
     --hard: 4px 4px 0 var(--ink);
   }
-  body { background: var(--page); color: var(--ink); font: 14px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  /* 넓은 화면은 도면 창 하나가 화면 전체라 페이지 스크롤이 필요 없다(패널은 창 위에 떠 있다).
+     좁은 화면은 패널이 도면 아래로 쌓이므로 스크롤을 남긴다. */
+  @media (min-width: 761px) { html, body { height: 100%; overflow: hidden; } }
   .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   button:focus-visible, .rack:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   /* 산업군 견본: 점묘 밀도로 구분하는 작은 네모 */
