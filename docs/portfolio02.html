@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이정민 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  /* 흑백 선화 + 점묘(디더링) 질감의 기술 문서풍 벤토. 포인트 색은 파랑(시작)·주황(지금) 두 가지만 쓴다.
+     종이 인쇄물 같은 단일 테마로 고정하고 모든 색을 직접 지정한다. */
+  :root {
+    color-scheme: light;
+    --page: #e7e7e3;
+    --paper: #fcfcfa;
+    --well: #f1f1ee;
+    --ink: #151515;
+    --muted: #6d6d68;
+    --faint: #b9b9b3;
+    --blue: #2f5bff;
+    --orange: #ff5a1f;
+    --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace, "Noto Sans KR";
+    --dots: radial-gradient(var(--ink) .8px, transparent 1.1px);
+  }
+  body { background: var(--page); color: var(--ink); font: 14px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .frame { max-width: 1180px; margin: 24px auto 48px; padding-inline: 16px; }
+  .topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 4px 4px 12px; font: 500 13px var(--mono); }
+  .topbar b { font-weight: 600; letter-spacing: .04em; }
+  .topbar span { color: var(--muted); }
+  .sheet { background: var(--paper); border-radius: 14px; padding: 26px; box-shadow: 0 30px 60px rgba(0, 0, 0, .08); }
+
+  .bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; grid-auto-flow: dense; }
+  .tile { border: 1px solid var(--ink); background: var(--paper); display: flex; flex-direction: column; min-width: 0; }
+  .tall { grid-row: span 2; }
+  .wide { grid-column: 1 / -1; }
+  @media (max-width: 900px) { .bento { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .bento { grid-template-columns: 1fr; } .tall { grid-row: auto; } .sheet { padding: 14px; } }
+
+  .tile > h2 { margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--faint); font: 500 14px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .txt { padding: 14px 18px; display: grid; gap: 8px; }
+  .txt p { margin: 0; }
+  .art { margin-top: auto; background: var(--well); border-top: 1px solid var(--faint); display: grid; place-items: center; padding: 18px; min-height: 190px; }
+  .art svg { width: 100%; height: auto; max-height: 260px; overflow: visible; }
+  .art svg text { font-family: var(--mono); }
+
+  /* WHO: 터미널 + 코드 상자 */
+  .who .name { font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+  .who .role { font: 500 13px var(--mono); color: var(--muted); }
+  .term, .code { background: var(--paper); border: 1px solid var(--ink); box-shadow: 0 6px 0 var(--ink); font: 400 13px/1.75 var(--mono); }
+  .term { padding: 12px 16px; margin: 6px 18px 18px; }
+  .term .cmd::before { content: "> "; }
+  .term .out { color: var(--muted); }
+  .bar { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .bar i { flex: 1; height: 10px; border: 1px solid var(--ink); border-radius: 99px; overflow: hidden; display: block; }
+  .bar i b { display: block; height: 100%; background: var(--dots) 0 0 / 3px 3px; }
+  .cursor { display: inline-block; width: 8px; height: 15px; background: var(--ink); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .code { padding: 16px 20px; margin: 0 18px 22px; white-space: pre; overflow-x: auto; }
+  .code .c { color: var(--faint); }
+  .code .s { color: var(--blue); }
+  .code .n { color: var(--orange); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 18px 18px; margin-top: auto; }
+  .btn { font: 500 13px var(--mono); padding: 9px 14px; border: 1px solid var(--ink); background: var(--paper); text-decoration: none; box-shadow: 3px 3px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn.dark { background: var(--ink); color: var(--paper); }
+
+  ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  ul.plain li { display: flex; gap: 8px; align-items: baseline; }
+  ul.plain li span { color: var(--muted); font: 400 12px var(--mono); }
+  .leader { display: flex; gap: 6px; align-items: baseline; }
+  .leader::after { content: ""; order: 1; flex: 1; border-bottom: 1px dotted var(--faint); }
+  .leader b { order: 2; font: 500 12px var(--mono); }
+
+  /* 기술을 쓴 기간 */
+  .rivers { padding: 16px 18px 20px; display: grid; gap: 7px; }
+  .axis, .river { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
+  .axis .yrs { position: relative; height: 16px; border-bottom: 1px solid var(--faint); }
+  .axis .yrs span { position: absolute; transform: translateX(-50%); font: 400 11px var(--mono); color: var(--muted); }
+  .river b { font: 500 12px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lane { position: relative; height: 14px; background: linear-gradient(var(--faint), var(--faint)) 0 50% / 100% 1px no-repeat; }
+  .lane i { position: absolute; top: 0; height: 14px; border: 1px solid var(--ink); background: var(--paper) var(--dots) 0 0 / 3px 3px; }
+  .lane i.now { border-color: var(--orange); background-image: radial-gradient(var(--orange) .8px, transparent 1.1px); }
+  @media (max-width: 620px) { .axis, .river { grid-template-columns: 86px 1fr; } }
+
+  /* 대표 프로젝트: 한 타일 안에 네 칸 */
+  .picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pick { display: flex; flex-direction: column; border-left: 1px solid var(--faint); }
+  .pick:first-child { border-left: 0; }
+  .pick .art { min-height: 170px; margin-top: 0; }
+  .pick .txt b { font-size: 15px; line-height: 1.4; }
+  .pick .meta { font: 400 12px var(--mono); color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag { font: 500 11px/1 var(--mono); padding: 4px 6px; border: 1px solid var(--ink); }
+  @media (max-width: 900px) { .picks { grid-template-columns: 1fr 1fr; } .pick:nth-child(3) { border-left: 0; } .pick:nth-child(n+3) { border-top: 1px solid var(--faint); } }
+  @media (max-width: 620px) { .picks { grid-template-columns: 1fr; } .pick { border-left: 0; } .pick + .pick { border-top: 1px solid var(--faint); } }
+
+  /* 전체 이력 */
+  .hist { padding: 4px 18px 12px; }
+  details { border-top: 1px solid var(--faint); }
+  details:first-child { border-top: 0; }
+  summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: 22px 110px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 12px 0; font-family: var(--mono); }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "[+]"; font-size: 12px; }
+  details[open] summary::before { content: "[−]"; }
+  summary .yr { font-weight: 600; }
+  summary strong { font: 700 14px "Noto Sans KR", sans-serif; }
+  summary .cnt { font-size: 12px; color: var(--muted); }
+  .row { display: grid; grid-template-columns: 22px 150px minmax(0, 1fr) 150px 60px; gap: 12px; padding: 7px 0; border-top: 1px dashed var(--faint); align-items: baseline; }
+  .row .p, .row .m { font: 400 12px var(--mono); color: var(--muted); }
+  .row .m { text-align: right; color: var(--ink); }
+  .row .c { font-size: 13px; color: var(--muted); }
+  .row .d { width: 8px; height: 8px; border: 1px solid var(--ink); justify-self: center; }
+  .row.now .d { background: var(--orange); border-color: var(--orange); }
+  @media (max-width: 700px) { summary { grid-template-columns: 30px minmax(0, 1fr) auto; } summary strong { display: none; } .row { grid-template-columns: 22px minmax(0, 1fr) 50px; } .row .p, .row .c { display: none; } }
+
+  .foot { margin: 16px 4px 0; font: 400 12px var(--mono); color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } .btn { transition: none; } }
+</style>
+
+<!-- 모든 그림이 함께 쓰는 점묘·빗금·모눈 무늬 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="d1" width="3" height="3" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".85" fill="#151515"/></pattern>
+    <pattern id="d2" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".75" fill="#151515"/></pattern>
+    <pattern id="d3" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r=".75" fill="#151515"/></pattern>
+    <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#151515" stroke-width=".8"/></pattern>
+    <pattern id="gridp" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#c4c4bd" stroke-width=".6"/></pattern>
+  </defs>
+</svg>
+
+<div class="frame">
+  <div class="topbar"><b>LEE JEONGMIN — PORTFOLIO</b><span>2007 — NOW</span></div>
+  <main class="sheet">
+    <div class="bento">
+      <section class="tile tall who" aria-labelledby="who-h">
+        <h2 id="who-h">Hello, world</h2>
+        <div class="txt">
+          <div class="name">이정민</div>
+          <div class="role">SI·PLM Developer · 차장</div>
+          <p id="intro"></p>
+        </div>
+        <div class="term">
+          <div class="cmd">whoami</div>
+          <div class="out">이정민 — 19년차 SI·PLM 개발자</div>
+          <div class="cmd">career --since 2007</div>
+          <div class="bar"><i><b id="bar"></b></i><span id="bar-t"></span></div>
+          <div class="cmd"><span class="cursor"></span></div>
+        </div>
+        <div class="code" id="code"></div>
+        <div class="term" id="ls"></div>
+        <div class="links">
+          <a class="btn dark" href="portfolio01.html" target="_blank" rel="noopener">OPEN CAREER MAP →</a>
+          <a class="btn" href="#work">SELECTED WORK</a>
+        </div>
+      </section>
+
+      <section class="tile" aria-labelledby="era-h">
+        <h2 id="era-h">Five chapters</h2>
+        <div class="txt"><p>19년을 다섯 시기로 나누면:</p><ul class="plain" id="eras"></ul></div>
+        <div class="art"><svg id="plates" role="img" aria-label="다섯 시기를 층층이 쌓은 판, 아래가 2007년, 맨 위가 지금"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="lang-h">
+        <h2 id="lang-h">Speaks your stack</h2>
+        <div class="txt"><p id="lang-t"></p></div>
+        <div class="art"><svg id="boxes" viewBox="0 0 320 196" role="img" aria-label="많이 쓴 기술 상자"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="now-h">
+        <h2 id="now-h">Now building</h2>
+        <div class="txt"><p id="now-t"></p><div class="tags" id="now-tags"></div></div>
+        <div class="art"><svg id="ticket" role="img" aria-label="지금 하는 프로젝트 티켓"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="dom-h">
+        <h2 id="dom-h">Domains</h2>
+        <div class="txt"><ul class="plain" id="dom"></ul></div>
+        <div class="art"><svg id="bars" role="img" aria-label="산업군별 참여 개월"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="pos-h">
+        <h2 id="pos-h">Step by step</h2>
+        <div class="txt"><ul class="plain" id="steps"></ul></div>
+        <div class="art"><svg id="stairs" role="img" aria-label="직위 계단"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="cl-h">
+        <h2 id="cl-h">Worked with</h2>
+        <div class="txt"><ul class="plain" id="clients"></ul></div>
+      </section>
+
+      <a class="tile" href="portfolio01.html" target="_blank" rel="noopener" style="text-decoration:none" aria-labelledby="map-h">
+        <h2 id="map-h">Career map ↗</h2>
+        <div class="txt"><p>27개 프로젝트를 연도별 구역 위 블록으로 쌓은 인터랙티브 지도. 끌고, 확대하고, 따라가 보세요.</p></div>
+        <div class="art"><svg id="mini" role="img" aria-label="경력 지도 미리보기"></svg></div>
+      </a>
+
+      <section class="tile wide" aria-labelledby="riv-h">
+        <h2 id="riv-h">Stack timeline</h2>
+        <div class="rivers" id="rivers"></div>
+      </section>
+
+      <section class="tile wide" id="work" aria-labelledby="pick-h">
+        <h2 id="pick-h">Selected work</h2>
+        <div class="picks" id="picks"></div>
+      </section>
+
+      <section class="tile wide" aria-labelledby="all-h">
+        <h2 id="all-h">All projects · <span id="all-n"></span></h2>
+        <div class="hist" id="history"></div>
+      </section>
+    </div>
+  </main>
+  <p class="foot">개인이력카드 기준 · 기간은 참여 시작월과 종료월을 포함해 셉니다.</p>
+</div>
+
+<script>
+// [프로젝트, 시작 YY.MM, 종료 YY.MM | null(진행 중), 발주처, 근무회사, 직위, 역할, 산업군, 스택]
+// portfolio01.html 과 같은 데이터다. 이력이 바뀌면 두 파일을 함께 고친다.
+const P = [
+  ['통합생산관리시스템 1차 운영', '07.02', '07.12', '금호석유', '버츄얼리드', '사원', '유지보수', 'mfg', ['JSP', 'Oracle']],
+  ['통합생산관리시스템 2차 운영', '08.01', '08.12', '금호석유', '버츄얼리드', '사원', '유지보수', 'mfg', ['JSP', 'Oracle']],
+  ['SK네트웍스 관리자페이지 운영', '09.01', '10.05', 'SK네트웍스', '버츄얼리드', '사원', '유지보수', 'biz', ['JSP', 'Oracle']],
+  ['삼성생명', '11.06', '11.09', '삼성생명', '버츄얼리드', '사원', '유지보수', 'biz', ['JSP', 'Oracle']],
+  ['중소기업중앙회', '11.09', '11.12', '중소기업중앙회', '화인에스아이', '사원', '유지보수', 'public', ['JSP', 'Oracle']],
+  ['KBS IPTV ADMIN 페이지', '12.01', '12.06', 'KBS', '아르고 인포텍', '사원', '개발', 'telco', ['Java', 'JSP', 'Oracle']],
+  ['농촌진흥청 ITCC (국제기술협력 시스템)', '12.06', '12.12', '농촌진흥청', 'RMBL', '사원', '개발', 'public', ['전자정부프레임워크', 'Oracle']],
+  ['농촌진흥청 농업기상정보서비스', '13.06', '13.12', '농촌진흥청', 'U3CNC', '대리', '개발', 'public', ['JSP', 'Oracle']],
+  ['한국환경공단 좋은빛 정보센터', '13.12', '14.02', '한국환경공단', 'U3CNC', '대리', '개발', 'public', ['전자정부프레임워크', 'Oracle']],
+  ['송파구청', '14.03', '15.05', '송파구청', '아사달', '대리', '개발, 유지보수', 'public', ['Velocity', 'JSP', 'Oracle']],
+  ['KT(정자) 차세대BSS E2E LOG', '15.06', '15.12', 'KT', '펄소프트', '대리', '개발', 'telco', ['Spring 4', 'jqGrid', 'PostgreSQL']],
+  ['사회환경지도사', '16.05', '16.07', '사회환경보전', 'ZEN9', '선임', '개발', 'public', ['전자정부프레임워크', 'MSSQL']],
+  ['KT(정자) 차세대BIT TDMS', '16.07', '17.05', 'KT', '알앤비소프트웨어', '과장', '개발', 'telco', ['Spring 3', 'AngularJS 1.3', 'PostgreSQL']],
+  ['SKT TANGO 상면관리 시스템', '17.07', '17.11', 'SKT', '이나우테크놀러지', '과장', '개발', 'telco', ['Spring 4', 'Alopex Grid', 'Oracle']],
+  ['삼성기흥공장 물류자동화 Layout', '18.03', '18.11', '삼성전자', '노리시스템', '과장', '개발', 'mfg', ['Spring 4', 'D3.js', 'Oracle']],
+  ['삼성 멀티캠퍼스 LMS 시스템', '18.12', '19.03', '삼성멀티캠퍼스 HR', '인플러스', '과장', '개발', 'biz', ['Java', 'JSP', 'Oracle']],
+  ['삼성기흥공장 물류자동화 Layout', '19.05', '20.01', '삼성전자', '노리시스템', '과장', '개발', 'mfg', ['Spring 4', 'D3.js', 'Oracle']],
+  ['삼성기흥 SystemWorkPlace AS-IS 전환작업', '20.06', '20.09', '삼성SDS', '한류AI', '과장', '개발', 'mfg', ['DWP Framework', 'Vue', 'RealGrid', 'Oracle']],
+  ['SK하이닉스 Solution PLM QIA ITEM 개발', '20.10', '21.03', 'SK하이닉스', '플래티어', '과장', '개발', 'mfg', ['Spring 3', 'jqGrid', 'Oracle']],
+  ['CJ 블로썸파크 PLM PPM 개발', '21.05', '22.02', '삼성SDS', '엔솔루션', '차장', '개발', 'mfg', ['FrameOne', 'AUIGrid', 'amCharts', 'Oracle']],
+  ['삼성기흥 PLM Smart D&E (OPC Modeling)', '22.05', '22.08', '삼성SDS', '아이엘포유', '차장', '개발', 'mfg', ['Oboe Framework', 'RealGrid', 'Oracle']],
+  ['SHE Portal 협력사 안전포인트 신설 및 사용자 참여 확대', '22.10', '22.12', 'SK하이닉스', '이에치코어', '차장', '개발', 'mfg', ['NexCore', 'Alopex Grid', 'Oracle']],
+  ['삼성전자 MX 사업부 P-BOM (CCB 회의록)', '23.06', '23.12', '삼성SDS', '아이엘포유', '차장', '개발', 'mfg', ['Java', 'RealGrid', 'Oracle']],
+  ['삼성전자 슈퍼컴 시뮬레이션 현황 모니터링 및 제어시스템 개선', '24.04', '24.12', '삼성SDS', '이네딧', '차장', '개발', 'mfg', ['LEGO Framework', 'Vue', 'Oboe Framework', 'Oracle']],
+  ['SK C&C 구매표준관리플랫폼', '25.03', '25.04', 'SK C&C', '마노시스템', '차장', '개발', 'biz', ['Spring', 'Vue 3', 'RealGrid', 'PostgreSQL']],
+  ['삼성전기 MDM & mMDM', '25.05', '25.08', '삼성전기', '마노시스템', '차장', '개발', 'mfg', ['Spring', 'Vue 3', 'AG Grid', 'Oracle']],
+  ['만도 PLM', '26.05', null, '삼성SDS', '블루비즈랩', '차장', '개발', 'mfg', ['LEGO Framework', 'Vue 3', 'AG Grid', 'Oracle']],
+];
+// 산업군마다 점묘 무늬 하나: 비중이 큰 산업군일수록 촘촘한 무늬
+const SECT = {
+  mfg:    { name: '제조·반도체', fill: 'url(#d1)' },
+  public: { name: '공공', fill: 'url(#d2)' },
+  telco:  { name: '통신·미디어', fill: 'url(#hatch)' },
+  biz:    { name: '금융·교육·IT', fill: 'url(#d3)' },
+};
+// 시작 연도로 묶는다. to 가 null 이면 현재까지. portfolio01.html 의 시기 구분과 같다.
+const ERAS = [
+  { from: 2007, to: 2010, title: '운영·유지보수' },
+  { from: 2011, to: 2014, title: '공공·미디어 SI' },
+  { from: 2015, to: 2018, title: '통신·물류 시스템' },
+  { from: 2019, to: 2022, title: 'PLM 으로 이동' },
+  { from: 2023, to: null, title: 'PLM·MDM, Vue 3' },
+];
+// 대표 프로젝트: 번호(1부터). 여러 차수로 나뉜 같은 프로젝트는 한 칸으로 묶는다.
+const PICKS = [[27], [24], [15, 17], [20]];
+
+const now = new Date();
+const ym = s => { const [y, m] = s.split('.').map(Number); return (2000 + y) * 12 + m - 1; };
+const nowM = now.getFullYear() * 12 + now.getMonth();
+const fmt = s => '20' + s;
+const key = s => s.replace(/ \d[\d.]*$/, '');
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const items = P.map((p, k) => {
+  const a = ym(p[1]), b = p[2] ? ym(p[2]) : nowM;
+  return { k, name: p[0], from: p[1], to: p[2], client: p[3], company: p[4], pos: p[5], role: p[6], sec: p[7], stack: p[8], keys: [...new Set(p[8].map(key))], a, b, m: b - a + 1 };
+});
+const period = it => `${fmt(it.from)}–${it.to ? fmt(it.to) : '진행 중'}`;
+const $ = id => document.getElementById(id);
+const tags = list => list.map(t => `<span class="tag">${esc(t)}</span>`).join('');
+const totalM = items.reduce((s, it) => s + it.m, 0);
+const cur = items.find(it => !it.to);
+const firstY = +fmt(items[0].from).slice(0, 4);
+const inEra = e => items.filter(it => { const y = +fmt(it.from).slice(0, 4); return y >= e.from && (e.to === null || y <= e.to); });
+const count = {};
+for (const it of items) for (const k of it.keys) count[k] = (count[k] || 0) + 1;
+const ranked = Object.entries(count).sort((a, b) => b[1] - a[1]);
+
+// ---- 아이소메트릭 선화 도우미 (2:1 투영, portfolio01 과 같다) ----
+const INK = '#151515', BLUE = '#2f5bff', ORANGE = '#ff5a1f';
+const iso = (x, y, z = 0) => [x - y, (x + y) / 2 - z];
+const poly = pts => pts.map(p => p.map(v => +v.toFixed(1)).join(',')).join(' ');
+const plane = z => `matrix(1 .5 -1 .5 0 ${-z})`;
+// 선 상자: 앞-왼쪽(l)·앞-오른쪽(r)·윗면(t) 채움 + 검은 외곽선
+function box(x, y, w, d, z0, h, t = '#fff', l = '#fff', r = 'url(#d3)') {
+  const L0 = iso(x, y + d, z0), B0 = iso(x + w, y + d, z0), R0 = iso(x + w, y, z0);
+  const L1 = iso(x, y + d, z0 + h), B1 = iso(x + w, y + d, z0 + h), R1 = iso(x + w, y, z0 + h), T1 = iso(x, y, z0 + h);
+  const st = `stroke="${INK}" stroke-width="1.1" stroke-linejoin="round"`;
+  return `<polygon points="${poly([L0, B0, B1, L1])}" fill="${l}" ${st}/><polygon points="${poly([B0, R0, R1, B1])}" fill="${r}" ${st}/><polygon points="${poly([T1, R1, B1, L1])}" fill="${t}" ${st}/>`;
+}
+// 그림 경계에 맞춰 viewBox 를 잡는다
+function fit(svg, body, pts, pad = 10) {
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad;
+  svg.setAttribute('viewBox', `${x0.toFixed(0)} ${y0.toFixed(0)} ${(Math.max(...xs) - x0 + pad).toFixed(0)} ${(Math.max(...ys) - y0 + pad).toFixed(0)}`);
+  svg.innerHTML = body;
+}
+
+// ---- Hello, world ----
+const mfgN = items.filter(it => it.sec === 'mfg').length;
+$('intro').textContent = `${firstY}년부터 프로젝트 ${items.length}건에 참여했습니다. 그중 ${mfgN}건이 제조·반도체 분야이고, 지금은 삼성SDS 발주 만도 PLM 을 Vue 3 로 개발하고 있습니다.`;
+const years = now.getFullYear() - firstY, span = nowM - ym(items[0].from) + 1;
+$('bar').style.width = `${(100 * totalM / span).toFixed(0)}%`;
+$('bar-t').textContent = `${Math.floor(totalM / 12)}y ${totalM % 12}m / ${years}y`;
+const S = v => `<span class="s">'${esc(v)}'</span>`, N = v => `<span class="n">${v}</span>`;
+$('code').innerHTML =
+`const dev = {
+  name: ${S('이정민')},
+  role: ${S('SI·PLM Developer')},
+  since: ${N(firstY)},
+  projects: ${N(items.length)},
+  clients: ${N(new Set(items.map(it => it.client)).size)},
+  now: ${S(cur.name)}, <span class="c">// ${fmt(cur.from)}~</span>
+};
+
+<span class="c">// 가장 많이 쓴 스택</span>
+dev.stack = [${ranked.slice(0, 3).map(([k]) => S(k)).join(', ')}];`;
+
+// 발주처 상위 다섯 곳을 ls 출력처럼
+{
+  const cnt = {};
+  for (const it of items) cnt[it.client] = (cnt[it.client] || 0) + 1;
+  const topC = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  $('ls').innerHTML = `<div class="cmd">ls ./clients --top 5</div>` +
+    topC.map(([c, n]) => `<div class="out">${String(n).padStart(2, ' ')}  ${esc(c)}</div>`).join('');
+}
+
+// ---- Five chapters: 시기 5개를 층층이 쌓은 판. 아래가 가장 오래된 시기. ----
+(() => {
+  const W = 170, D = 96, GAP = 34;
+  let s = '', pts = [];
+  ERAS.forEach((e, i) => {
+    const z = i * GAP, list = inEra(e), top = i === ERAS.length - 1;
+    s += `<g transform="${plane(z)}">
+      <rect x="4" y="4" width="${W}" height="${D}" rx="12" fill="${INK}"/>
+      <rect width="${W}" height="${D}" rx="12" fill="${top ? 'url(#d2)' : '#fff'}" stroke="${INK}" stroke-width="1.1"/>
+      ${list.map((it, j) => `<rect x="${14 + j * 15}" y="16" width="9" height="9" fill="${!it.to ? ORANGE : INK}"/>`).join('')}
+      <rect x="10" y="${D - 30}" width="74" height="20" fill="#fff" stroke="${INK}" stroke-width=".8"/>
+      <text x="16" y="${D - 15}" font-size="11" font-weight="600" fill="${INK}">${e.from}–${e.to ? String(e.to).slice(2) : 'now'}</text>
+    </g>`;
+    pts.push(iso(0, D, z), iso(W + 4, 0, z), iso(W + 4, D + 4, z), iso(0, 0, z));
+  });
+  // 시작점(파랑)에서 지금(주황)까지 판을 꿰는 점선
+  const a = iso(W - 24, D / 2, 0), b = iso(W - 24, D / 2, (ERAS.length - 1) * GAP);
+  s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${INK}" stroke-dasharray="3 3"/>`;
+  s += `<circle cx="${a[0]}" cy="${a[1]}" r="4.5" fill="${BLUE}"/><circle cx="${b[0]}" cy="${b[1]}" r="4.5" fill="${ORANGE}"/>`;
+  fit($('plates'), s, pts);
+})();
+$('eras').innerHTML = ERAS.map(e => `<li class="leader">${e.title}<b>${inEra(e).length}건</b></li>`).join('');
+
+// ---- Speaks your stack: 모눈종이 위 기술 상자 ----
+(() => {
+  // 상자에 들어가도록 긴 이름은 줄여 쓴다
+  const SHORT = { '전자정부프레임워크': 'eGovFrame' };
+  const top = ranked.slice(0, 7).map(([k]) => SHORT[k] ?? k);
+  const spots = [[16, 18], [118, 16], [220, 26], [26, 78], [134, 74], [222, 90], [40, 136], [170, 134]];
+  // 글자 폭 어림값: 영문·숫자 7.4px, 그 밖(한글) 12px
+  const tw = t => [...t].reduce((a, c) => a + (c.charCodeAt(0) < 128 ? 7.4 : 12), 0);
+  let s = `<rect x="4" y="4" width="312" height="186" rx="6" fill="url(#gridp)" stroke="${INK}"/>`;
+  spots.forEach(([x, y], i) => {
+    const label = top[i] ?? '+', w = Math.max(label === '+' ? 36 : 62, tw(label) + 24), fill = i % 3 === 0 ? 'url(#d3)' : '#fff';
+    s += `<rect x="${x + 4}" y="${y + 4}" width="${w}" height="34" fill="${INK}"/>`;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="34" fill="${fill}" stroke="${INK}"/>`;
+    s += `<rect x="${x + w / 2 - tw(label) / 2 - 5}" y="${y + 9}" width="${tw(label) + 10}" height="16" fill="#fff"/>`;
+    s += `<text x="${x + w / 2}" y="${y + 21.5}" text-anchor="middle" font-size="12" fill="${INK}">${esc(label)}</text>`;
+  });
+  $('boxes').innerHTML = s;
+})();
+$('lang-t').textContent = `Java·Spring 백엔드와 Vue·그리드 컴포넌트 프론트, Oracle 은 ${count.Oracle}건에서 썼습니다.`;
+
+// ---- Now building: 바닥에 놓인 티켓 ----
+$('now-t').innerHTML = `<b>${esc(cur.name)}</b> · ${esc(cur.client)} 발주 · ${esc(cur.company)} ${cur.pos}<br><span class="mono">${fmt(cur.from)}부터 ${cur.m}개월째</span>`;
+$('now-tags').innerHTML = tags(cur.stack);
+(() => {
+  const W = 230, H = 96, T = 8;
+  let path = `M0 0H${W}`;
+  for (let y = 0; y < H; y += T) path += `L${W - 7} ${y + T / 2}L${W} ${y + T}`;
+  path += `H0`;
+  for (let y = H; y > 0; y -= T) path += `L7 ${y - T / 2}L0 ${y - T}`;
+  path += 'Z';
+  const s = `<g transform="${plane(0)}">
+    <path d="${path}" transform="translate(5 5)" fill="${INK}"/>
+    <path d="${path}" fill="#fff" stroke="${INK}" stroke-width="1.1"/>
+    <rect x="12" y="8" width="44" height="${H - 16}" fill="url(#d1)"/>
+    <text x="70" y="36" font-size="22" font-weight="600" fill="${ORANGE}">NOW</text>
+    <text x="70" y="60" font-size="14" font-weight="600" fill="${INK}">${esc(cur.name)}</text>
+    <text x="70" y="80" font-size="11" fill="${INK}">${fmt(cur.from)} →</text>
+  </g>`;
+  fit($('ticket'), s, [iso(0, H + 5), iso(W + 5, 0), iso(W + 5, H + 5), iso(0, 0)]);
+})();
+
+// ---- Domains: 산업군별 참여 개월을 기둥 높이로 ----
+const bySect = Object.keys(SECT).map(s => ({ s, m: items.filter(it => it.sec === s).reduce((a, it) => a + it.m, 0), n: items.filter(it => it.sec === s).length }));
+$('dom').innerHTML = bySect.map(d => `<li class="leader">${SECT[d.s].name}<b>${Math.round(100 * d.m / totalM)}% · ${d.m}개월</b></li>`).join('');
+(() => {
+  const maxM = Math.max(...bySect.map(d => d.m));
+  let s = '', pts = [];
+  bySect.forEach((d, i) => {
+    const x = i * 44, h = 16 + 120 * d.m / maxM;
+    s += box(x, 0, 28, 28, 0, h, '#fff', SECT[d.s].fill, 'url(#d3)');
+    pts.push(iso(x, 28), iso(x + 28, 0, h), iso(x + 28, 28));
+  });
+  fit($('bars'), s, pts);
+})();
+
+// ---- Step by step: 같은 직위가 이어지는 구간을 한 계단으로 ----
+(() => {
+  const steps = [];
+  for (const it of items) {
+    const last = steps.at(-1);
+    if (last && last.pos === it.pos) { last.to = it.to; last.n++; }
+    else steps.push({ pos: it.pos, from: it.from, to: it.to, n: 1 });
+  }
+  // 계단 그림은 라벨 없이 두고(좁은 계단 위에서 글자가 겹친다), 직위와 연도는 위 목록에 쓴다. 맨 위 칸이 지금.
+  const SW = 34, SD = 64, SH = 18;
+  let s = '', pts = [];
+  steps.forEach((st, i) => {
+    const x = i * SW, h = (i + 1) * SH, last = i === steps.length - 1;
+    s += box(x, 0, SW, SD, 0, h, last ? ORANGE : '#fff', '#fff', 'url(#d3)');
+    pts.push(iso(x, SD), iso(x + SW, 0, h), iso(x + SW, SD));
+  });
+  fit($('stairs'), s, pts);
+  $('steps').innerHTML = steps.map((st, i) => {
+    const a = fmt(st.from).slice(0, 4), b = st.to ? fmt(st.to).slice(0, 4) : 'now';
+    return `<li class="leader"${i === steps.length - 1 ? ` style="color:${ORANGE}"` : ''}>${st.pos}<b>${a === b ? a : `${a}–${b}`} · ${st.n}건</b></li>`;
+  }).join('');
+})();
+
+// ---- Worked with ----
+const cl = {};
+for (const it of items) cl[it.client] = (cl[it.client] || 0) + 1;
+$('clients').innerHTML = Object.entries(cl).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<li class="leader">${esc(c)}<b>${n}</b></li>`).join('');
+
+// ---- Career map: 연도 구역 미니어처 ----
+(() => {
+  const C = 46, G = 12;
+  let s = '', pts = [];
+  for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) {
+    const x = i * (C + G), y = j * (C + G), hot = j === 1 && i === 3;
+    s += `<g transform="${plane(0)}"><rect x="${x}" y="${y}" width="${C}" height="${C}" rx="6" fill="${hot ? 'url(#d2)' : '#fff'}" stroke="${INK}"/></g>`;
+    pts.push(iso(x, y + C), iso(x + C, y), iso(x + C, y + C), iso(x, y));
+  }
+  for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) {
+    const x = i * (C + G) + 14, y = j * (C + G) + 14, h = 10 + ((i * 7 + j * 3) % 4) * 9;
+    s += box(x, y, 18, 18, 0, h, (j === 1 && i === 3) ? ORANGE : '#fff');
+    pts.push(iso(x + 18, y, h));
+  }
+  fit($('mini'), s, pts);
+})();
+
+// ---- Stack timeline: 기술마다 쓴 기간을 한 줄 막대로. 4개월 이하의 틈은 이어 붙인다. ----
+(() => {
+  const T0 = firstY * 12, T1 = nowM + 1, pct = m => ((m - T0) / (T1 - T0) * 100).toFixed(2);
+  const first = k => Math.min(...items.filter(it => it.keys.includes(k)).map(it => it.a));
+  const keys = ranked.filter(([, n]) => n >= 2).map(([k]) => k).sort((a, b) => first(a) - first(b));
+  let h = `<div class="axis"><span></span><div class="yrs">${[2007, 2010, 2013, 2016, 2019, 2022, 2025].map(y => `<span style="left:${pct(y * 12)}%">${y}</span>`).join('')}</div></div>`;
+  for (const k of keys) {
+    const ms = [...new Set(items.filter(it => it.keys.includes(k)).flatMap(it => Array.from({ length: it.m }, (_, i) => it.a + i)))].sort((a, b) => a - b);
+    const spans = [];
+    for (const m of ms) { const l = spans.at(-1); if (l && m - l[1] <= 4) l[1] = m; else spans.push([m, m]); }
+    h += `<div class="river"><b title="${esc(k)}">${esc(k)}</b><div class="lane">${spans.map(([a, b]) =>
+      `<i${b >= nowM ? ' class="now"' : ''} style="left:${pct(a)}%;width:${pct(T0 + b - a + 1)}%"></i>`).join('')}</div></div>`;
+  }
+  $('rivers').innerHTML = h;
+})();
+
+// ---- Selected work: 칸마다 그 프로젝트의 탑 선화 ----
+$('picks').innerHTML = PICKS.map(nums => {
+  const list = nums.map(n => items[n - 1]), it = list[0], m = list.reduce((a, x) => a + x.m, 0);
+  return `<article class="pick">
+    <div class="art"><svg data-u="${Math.max(1, Math.ceil(m / 3))}" data-now="${it.to ? '' : 1}" data-fill="${SECT[it.sec].fill}" aria-hidden="true"></svg></div>
+    <div class="txt">
+      <div class="meta">No.${nums.map(n => String(n).padStart(2, '0')).join('·')} · ${m}개월</div>
+      <b>${esc(it.name)}</b>
+      <div class="meta">${list.map(period).join(', ')}</div>
+      <div class="meta">${esc(it.client)} 발주 · ${esc(it.company)}</div>
+      <div class="tags">${tags(it.stack)}</div>
+    </div>
+  </article>`;
+}).join('');
+for (const svg of document.querySelectorAll('.pick svg')) {
+  const u = +svg.dataset.u, FP = 44, UH = 10, h = u * UH;
+  let s = `<g transform="${plane(0)}"><rect x="-16" y="-16" width="${FP + 32}" height="${FP + 32}" rx="8" fill="url(#gridp)" stroke="${INK}"/></g>`;
+  s += box(0, 0, FP, FP, 0, h, svg.dataset.now ? ORANGE : '#fff', '#fff', svg.dataset.fill);
+  for (let q = 1; q < u; q++) s += `<polyline points="${poly([iso(0, FP, q * UH), iso(FP, FP, q * UH), iso(FP, 0, q * UH)])}" fill="none" stroke="${INK}" stroke-width=".6"/>`;
+  for (let q = 0; q < u; q++) {
+    const z0 = q * UH + 3, z1 = q * UH + 7;
+    s += `<polygon points="${poly([iso(14, FP, z0), iso(30, FP, z0), iso(30, FP, z1), iso(14, FP, z1)])}" fill="${INK}"/>`;
+  }
+  fit(svg, s, [iso(-16, FP + 16), iso(FP + 16, -16), iso(FP + 16, FP + 16), iso(0, 0, h)]);
+}
+
+// ---- All projects: 시기별로 묶어 모두 펼쳐 둔다(접을 수는 있다) ----
+$('all-n').textContent = items.length;
+$('history').innerHTML = ERAS.map(e => {
+  const list = inEra(e), m = list.reduce((a, it) => a + it.m, 0);
+  return `<details open>
+    <summary><span class="yr">${e.from}–${e.to ?? 'now'}</span><strong>${e.title}</strong><span class="cnt">${list.length}건 · ${m}개월</span></summary>
+    ${list.map(it => `<div class="row${it.to ? '' : ' now'}"><span class="d"></span><span class="p">${period(it)}</span><span>${esc(it.name)}</span><span class="c">${esc(it.client)}</span><span class="m">${it.m}개월</span></div>`).join('')}
+  </details>`;
+}).join('');
+</script>
