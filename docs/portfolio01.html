@@ -168,6 +168,10 @@
   .tip span { opacity: .75; font: 400 11px var(--mono); }
 
   /* ---- SVG 도면 ---- */
+  /* 바닥 글자: 선 굵기는 확대 배율과 무관하게 화면 기준으로 고정한다 */
+  .mk-guide { fill: none; stroke: var(--faint); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .mk-fill path { stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+  .mk-ring circle { stroke-width: 1; vector-effect: non-scaling-stroke; }
   .zone-year { font: 600 18px var(--mono); fill: var(--ink); }
   .tag-t { font: 500 13px var(--mono); fill: var(--ink); }
   .live { font: 600 13px var(--mono); fill: var(--orange); }
@@ -423,10 +427,46 @@ for (const it of items.slice(0, -1)) {
   wires.push({ k: it.k, pts, nx, ny });
 }
 
+// ---- 바닥 글자: 마지막 줄 앞 바닥에 FULL STACK 을 원과 직선으로 작도해 깐다(portfolio02 의 작도 그림과 같은 글자꼴). ----
+// 글자마다 [폭, 외곽선(왼쪽 위가 0,0), 작도 원 [cx, cy, [반지름…]]]. 좌표는 높이 MH=64·획 MT=16 기준으로 적은 값이다.
+// U·C 는 바깥 반지름 32(=MH/2)·안쪽 16(=32-MT) 인 고리, S 는 바깥 20·안쪽 4 인 고리 둘을 위아래로 이은 것이다(4×20-MT = MH).
+const GLYPH = {
+  F: [52, 'M0 0H52V16H16V24H40V40H16V64H0Z', []],
+  U: [64, 'M0 0V32A32 32 0 0 0 64 32V0H48V32A16 16 0 0 1 16 32V0Z', [[32, 32, [32, 16]]]],
+  L: [46, 'M0 0H16V48H46V64H0Z', []],
+  S: [40, 'M40 20A20 20 0 1 0 20 40A4 4 0 1 1 16 44H0A20 20 0 1 0 20 24A4 4 0 1 1 24 20Z', [[20, 20, [20, 4]], [20, 44, [20, 4]]]],
+  T: [52, 'M0 0H52V16H34V64H18V16H0Z', []],
+  A: [56, 'M0 64L20 0H36L56 64H40L35.6 50H20.4L16 64ZM24.1 38H31.9L28 25.6Z', []],
+  C: [55, 'M54.6 9.4A32 32 0 1 0 54.6 54.6L43.3 43.3A16 16 0 1 1 43.3 20.7Z', [[32, 32, [32, 16]]]],
+  K: [56, 'M0 0H16V26L37 0H56L29 32L56 64H37L16 38V64H0Z', []],
+};
+// MGAP 글자 사이, MWORD 낱말 사이, MPAD 보조선이 글자 밖으로 나가는 길이
+const MH = 64, MT = 16, MGAP = 10, MWORD = 44, MPAD = 14;
+const MARK = (() => {
+  let guides = '', fills = '', rings = '', dots = '', x = 0;
+  for (const ch of 'FULL STACK') {
+    if (ch === ' ') { x += MWORD - MGAP; continue; }
+    const [w, d, circles] = GLYPH[ch];
+    guides += `M${x} ${-MPAD}V${MH + MPAD}M${x + w} ${-MPAD}V${MH + MPAD}`;
+    fills += `<path transform="translate(${x} 0)" d="${d}"/>`;
+    for (const [cx, cy, radii] of circles) {
+      for (const r of radii) rings += `<circle cx="${x + cx}" cy="${cy}" r="${r}"/>`;
+      dots += `<circle cx="${x + cx}" cy="${cy}" r="2.2"/>`;
+    }
+    x += w + MGAP;
+  }
+  const w = x - MGAP;
+  // 가로 보조선: 글자 위·아래와 획 굵기만큼 안쪽
+  for (const dy of [0, MT, MH - MT, MH]) guides += `M${-MPAD} ${dy}H${w + MPAD}`;
+  return { w, guides, fills, rings, dots };
+})();
+// 한 줄 폭이 도면 폭 PW 와 같아지도록 통째로 확대하고, 마지막 줄에서 줄 간격(GY)만큼 띄운다. MD 는 글자가 차지하는 바닥 깊이다.
+const MS = PW / MARK.w, MY = PD + GY, MD = GY + (MH + MPAD) * MS;
+
 const topOf = it => iso(it.x + FP / 2, it.y + FP / 2, it.u * UH);
 // 격자 끝은 잘라 내고, 위쪽은 가장 높은 블록과 핀까지 포함한다. SVG 는 viewBox 와 같은 픽셀 크기(1:1)로 그린다.
 const vTop = Math.min(-CROP, ...items.map(it => topOf(it)[1] - 70));
-const vX0 = -PD - CROP, vX1 = PW + CROP, vY1 = (PW + PD) / 2 + CROP;
+const vX0 = -PD - MD - CROP, vX1 = PW + CROP, vY1 = (PW + PD + MD) / 2 + CROP;
 const SW = vX1 - vX0, SH = vY1 - vTop;
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -456,6 +496,13 @@ function drawScene() {
     <mask id="fade" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fadeG)"/></mask>
   </defs>`;
   fl += `<rect x="${-M * 2}" y="${-M * 2}" width="${PW + M * 4}" height="${PD + M * 4}" fill="url(#gridp)" mask="url(#fade)"/>`;
+  // 바닥 글자는 모눈 바로 위에 깔아 구역 판·연결선보다 아래에 둔다
+  fl += `<g transform="translate(0 ${MY}) scale(${MS})">
+    <path class="mk-guide" d="${MARK.guides}"/>
+    <g class="mk-fill" fill="url(#d2)" fill-rule="evenodd" stroke="${INK}" stroke-linejoin="round">${MARK.fills}</g>
+    <g class="mk-ring" fill="none" stroke="${INK}">${MARK.rings}</g>
+    <g fill="${ORANGE}">${MARK.dots}</g>
+  </g>`;
   for (const e of ERAS) fl += `<rect class="era-rg" x="${e.x0}" y="${e.y0}" width="${e.w}" height="${ZD + ER * 2}" rx="26"/>`;
   const curZone = items.find(it => !it.to).zone;
   for (const z of zones) {
