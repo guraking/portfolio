@@ -97,9 +97,11 @@
 
   /* 대표 프로젝트: 한 타일 안에 네 칸 */
   .picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .pick { display: flex; flex-direction: column; border-left: 1px solid var(--faint); }
+  /* 카드들이 그림 행과 글 행을 공유한다. 그림 영역은 같은 줄에서 가장 높은 카드에 맞춰진다. */
+  .pick { display: grid; grid-row: span 2; grid-template-rows: subgrid; border-left: 1px solid var(--faint); }
   .pick:first-child { border-left: 0; }
   .pick .art { min-height: 170px; margin-top: 0; }
+  .pick .txt { align-content: start; }
   .pick .txt b { font-size: 15px; line-height: 1.4; }
   .pick .meta { font: 400 12px var(--mono); color: var(--muted); }
   .tags { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -127,6 +129,50 @@
   @media (max-width: 700px) { summary { grid-template-columns: 30px minmax(0, 1fr) auto; } summary strong { display: none; } .row { grid-template-columns: 22px minmax(0, 1fr) 50px; } .row .p, .row .c { display: none; } }
 
   .foot { margin: 16px 4px 0; font: 400 12px var(--mono); color: var(--muted); }
+
+  /* 모션: 동작 줄이기를 켠 사용자에게는 아무것도 적용하지 않는다.
+     fill-mode 는 backwards 만 쓴다. 끝난 뒤까지 값을 붙잡으면 아래 hover 의 transform 을 덮는다. */
+  @media (prefers-reduced-motion: no-preference) {
+    /* 타일은 화면에 들어올 때 떠오른다. .reveal 과 .in 은 맨 아래 스크립트가 붙인다.
+       스크립트가 돌지 않으면 .reveal 이 없어 타일은 처음부터 보인다. */
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+    .reveal .tile:not(.in) { opacity: 0; }
+    .tile.in { animation: rise .6s cubic-bezier(.2, .7, .2, 1) backwards; }
+    .tile.in:nth-child(3n+2) { animation-delay: .08s; }
+    .tile.in:nth-child(3n) { animation-delay: .16s; }
+    /* 타일 안: 목록 줄·그림·타임라인 막대가 차례로 나온다. --i 는 스크립트가 넣는 형제 순번이다. */
+    @keyframes slide { from { opacity: 0; transform: translateX(-8px); } }
+    .tile.in .leader, .tile.in .row { animation: slide .4s backwards; animation-delay: calc(.2s + var(--i, 0) * 45ms); }
+    .tile.in .art svg { animation: rise .7s .25s cubic-bezier(.2, .7, .2, 1) backwards; }
+    .tile.in .pick .art svg { animation-delay: calc(.1s + var(--i, 0) * 110ms); }
+    /* 판(g)에는 transform 속성으로 투영 행렬이 걸려 있다. transform 을 움직이면 행렬이 사라지므로 translate 를 쓴다. */
+    @keyframes drop { from { opacity: 0; translate: 0 -26px; } }
+    .tile.in #plates g { animation: drop .5s backwards; animation-delay: calc(.3s + var(--i, 0) * 110ms); }
+    @keyframes grow { from { transform: scaleX(0); } }
+    @keyframes pulse { 50% { opacity: .35; } }
+    .lane i { transform-origin: left; }
+    .tile.in .lane i { animation: grow .7s cubic-bezier(.2, .7, .2, 1) backwards; animation-delay: calc(.15s + var(--i, 0) * 45ms); }
+    /* 진행 중(주황) 표시는 천천히 깜빡인다 */
+    .tile.in .lane i.now { animation: grow .7s calc(.15s + var(--i, 0) * 45ms) cubic-bezier(.2, .7, .2, 1) backwards, pulse 1.8s 1.5s ease-in-out infinite; }
+    .row.now .d, #plates circle:last-of-type { animation: pulse 1.8s ease-in-out infinite; }
+    /* 지금 하는 프로젝트 티켓은 나타난 뒤 천천히 떠 있다 */
+    @keyframes float { 50% { translate: 0 -6px; } }
+    .tile.in #ticket { animation: rise .7s .25s cubic-bezier(.2, .7, .2, 1) backwards, float 4s 1s ease-in-out infinite; }
+    /* 경력 막대는 터미널 줄이 나타날 때(.go) JS 가 넣은 width 까지 차오른다 */
+    @keyframes fill { from { width: 0; } }
+    .go #bar { animation: fill 1.1s cubic-bezier(.2, .7, .2, 1) backwards; }
+    /* hover: 누를 수 있는 타일은 .btn 과 같은 방식으로 들리고, 대표 프로젝트 건물과 프로필 그림은 살짝 움직인다 */
+    a.tile { transition: transform .15s, box-shadow .15s; }
+    a.tile:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+    .pick svg { transition: transform .25s; }
+    .pick:hover svg { transform: translateY(-5px); }
+    .who .face { transition: transform .3s; }
+    .who .face:hover { transform: rotate(-6deg) scale(1.06); }
+    .row { transition: background-color .15s; }
+    .row:hover { background-color: var(--well); }
+    .tag { transition: background-color .15s, color .15s; }
+    .tag:hover { background-color: var(--ink); color: var(--paper); }
+  }
   @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } .btn { transition: none; } }
 </style>
 
@@ -522,4 +568,34 @@ $('history').innerHTML = ERAS.map(e => {
     ${list.map(it => `<div class="row${it.to ? '' : ' now'}"><span class="d"></span><span class="p">${period(it)}</span><span>${esc(it.name)}</span><span class="c">${esc(it.client)}</span><span class="m">${it.m}개월</span></div>`).join('')}
   </details>`;
 }).join('');
+
+// ---- 모션: 화면에 들어온 타일에 .in 을 붙이고, whoami 터미널을 타이핑한다. ----
+// 위에서 모든 타일 내용을 채운 뒤에 실행해야 한다. 동작 줄이기를 켠 사용자는 건너뛴다(CSS 쪽도 같은 조건).
+if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  // 형제 중 몇 번째인지를 --i 로 넘겨 CSS 가 그만큼 늦게 시작하게 한다
+  for (const el of document.querySelectorAll('.leader, .river, .row, .pick, #plates g')) el.style.setProperty('--i', [...el.parentNode.children].indexOf(el));
+  document.documentElement.classList.add('reveal');
+  // 타일이 화면 아래 10% 선을 넘어 들어오면 한 번만 나타낸다
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -10% 0px' });
+  for (const tile of document.querySelectorAll('.tile')) io.observe(tile);
+
+  // 터미널 줄을 위에서부터 차례로 보인다. 글자가 있는 명령 줄은 한 글자씩 친다.
+  // 자리를 차지한 채 숨겨(visibility) 타이핑 중에 타일 높이가 변하지 않게 한다.
+  const sleep = ms => new Promise(done => setTimeout(done, ms));
+  (async () => {
+    const lines = [...document.querySelector('.who .term').children];
+    for (const el of lines) el.style.visibility = 'hidden';
+    await sleep(600);
+    for (const el of lines) {
+      el.style.visibility = '';
+      el.classList.add('go');
+      const text = el.textContent;
+      // 글자가 없는 마지막 명령 줄은 커서(span)만 들어 있어 textContent 를 건드리면 커서가 지워진다
+      if (!el.matches('.cmd') || !text) { await sleep(300); continue; }
+      for (let n = 0; n <= text.length; n++) { el.textContent = text.slice(0, n); await sleep(55); }
+    }
+  })();
+}
 </script>
