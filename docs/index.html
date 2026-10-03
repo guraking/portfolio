@@ -1,6 +1,652 @@
 <!doctype html>
 <html lang="ko">
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=portfolio02.html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>이정민 포트폴리오</title>
-<a href="portfolio02.html">이정민 포트폴리오로 이동</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  /* 흑백 선화 + 점묘(디더링) 질감의 기술 문서풍 벤토. 포인트 색은 파랑(시작)·주황(지금) 두 가지만 쓴다.
+     종이 인쇄물 같은 단일 테마로 고정하고 모든 색을 직접 지정한다. */
+  :root {
+    color-scheme: light;
+    --page: #e7e7e3;
+    --paper: #fcfcfa;
+    --well: #f1f1ee;
+    --ink: #151515;
+    --muted: #6d6d68;
+    --faint: #b9b9b3;
+    --blue: #2f5bff;
+    --orange: #ff5a1f;
+    --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace, "Noto Sans KR";
+    --dots: radial-gradient(var(--ink) .8px, transparent 1.1px);
+  }
+  body { background: var(--page); color: var(--ink); font: 14px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .frame { max-width: 1180px; margin: 24px auto 48px; padding-inline: 16px; }
+  .topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 4px 4px 12px; font: 500 13px var(--mono); }
+  .topbar b { font-weight: 600; letter-spacing: .04em; }
+  .topbar span { color: var(--muted); }
+  .sheet { background: var(--paper); border-radius: 14px; padding: 26px; box-shadow: 0 30px 60px rgba(0, 0, 0, .08); }
+
+  .bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; grid-auto-flow: dense; }
+  .tile { border: 1px solid var(--ink); background: var(--paper); display: flex; flex-direction: column; min-width: 0; }
+  .tall { grid-row: span 2; }
+  .wide { grid-column: 1 / -1; }
+  @media (max-width: 900px) { .bento { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .bento { grid-template-columns: 1fr; } .tall { grid-row: auto; } .sheet { padding: 14px; } }
+
+  .tile > h2 { margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--faint); font: 500 14px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .txt { padding: 14px 18px; display: grid; gap: 8px; }
+  .txt p { margin: 0; }
+  .art { margin-top: auto; background: var(--well); border-top: 1px solid var(--faint); display: grid; place-items: center; padding: 18px; min-height: 190px; }
+  .art svg { width: 100%; height: auto; max-height: 260px; overflow: visible; }
+  .art svg text { font-family: var(--mono); }
+
+  /* WHO: 터미널 + 코드 상자 */
+  .who .name { font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+  .who .role { font: 500 13px var(--mono); color: var(--muted); }
+  /* 그림은 배경이 투명한 PNG 라 타일 색이 그대로 비친다. */
+  .who .face { width: 96px; height: 96px; grid-row: span 2; }
+  /* 그림은 왼쪽 열에서 이름·직함 두 행을 차지하고, 소개 문단은 두 열을 모두 쓴다. */
+  .who .txt { grid-template-columns: auto 1fr; column-gap: 16px; }
+  .who .name { align-self: end; }
+  .who .role { align-self: start; }
+  .who .txt p { grid-column: 1 / -1; }
+  /* FULL STACK 작도 그림. 보조선은 글자 밖으로 조금 나가므로 잘리지 않게 둔다. */
+  .mark { padding: 18px; }
+  .mark svg { display: block; width: 100%; height: auto; overflow: visible; }
+  #mark .guide { fill: none; stroke: var(--faint); stroke-width: .6; }
+  .term, .code { background: var(--paper); border: 1px solid var(--ink); box-shadow: 0 6px 0 var(--ink); font: 400 13px/1.75 var(--mono); }
+  .term { padding: 12px 16px; margin: 6px 18px 18px; }
+  .term .cmd::before { content: "> "; }
+  .term .out { color: var(--muted); }
+  .bar { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .bar i { flex: 1; height: 10px; border: 1px solid var(--ink); border-radius: 99px; overflow: hidden; display: block; }
+  .bar i b { display: block; height: 100%; background: var(--dots) 0 0 / 3px 3px; }
+  .cursor { display: inline-block; width: 8px; height: 15px; background: var(--ink); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .code { padding: 16px 20px; margin: 0 18px 22px; white-space: pre-wrap; overflow-x: auto; }
+  /* 타일이 최대 폭(3열)일 때 가장 긴 dev.stack 줄이 한 줄에 들어가는 크기. 더 좁으면 pre-wrap 으로 넘어간다. */
+  .code { font-size: 11.5px; }
+  .code .c { color: var(--faint); }
+  .code .s { color: var(--blue); }
+  .code .n { color: var(--orange); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 18px 18px; margin-top: auto; }
+  .btn { font: 500 13px var(--mono); padding: 9px 14px; border: 1px solid var(--ink); background: var(--paper); text-decoration: none; box-shadow: 3px 3px 0 var(--ink); transition: transform .12s, box-shadow .12s; }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn.dark { background: var(--ink); color: var(--paper); }
+
+  ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  ul.plain li { display: flex; gap: 8px; align-items: baseline; }
+  ul.plain li span { color: var(--muted); font: 400 12px var(--mono); }
+  .leader { display: flex; gap: 6px; align-items: baseline; }
+  .leader::after { content: ""; order: 1; flex: 1; border-bottom: 1px dotted var(--faint); }
+  .leader b { order: 2; font: 500 12px var(--mono); }
+
+  /* 기술을 쓴 기간 */
+  .rivers { padding: 16px 18px 20px; display: grid; gap: 7px; }
+  .axis, .river { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
+  .axis .yrs { position: relative; height: 16px; border-bottom: 1px solid var(--faint); }
+  .axis .yrs span { position: absolute; transform: translateX(-50%); font: 400 11px var(--mono); color: var(--muted); }
+  .river b { font: 500 12px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lane { position: relative; height: 14px; background: linear-gradient(var(--faint), var(--faint)) 0 50% / 100% 1px no-repeat; }
+  .lane i { position: absolute; top: 0; height: 14px; border: 1px solid var(--ink); background: var(--paper) var(--dots) 0 0 / 3px 3px; }
+  .lane i.now { border-color: var(--orange); background-image: radial-gradient(var(--orange) .8px, transparent 1.1px); }
+  @media (max-width: 620px) { .axis, .river { grid-template-columns: 86px 1fr; } }
+
+  /* 대표 프로젝트: 한 타일 안에 네 칸 */
+  .picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* 카드들이 그림 행과 글 행을 공유한다. 그림 영역은 같은 줄에서 가장 높은 카드에 맞춰진다. */
+  .pick { display: grid; grid-row: span 2; grid-template-rows: subgrid; border-left: 1px solid var(--faint); }
+  .pick:first-child { border-left: 0; }
+  .pick .art { min-height: 170px; margin-top: 0; }
+  .pick .txt { align-content: start; }
+  .pick .txt b { font-size: 15px; line-height: 1.4; }
+  .pick .meta { font: 400 12px var(--mono); color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag { font: 500 11px/1 var(--mono); padding: 4px 6px; border: 1px solid var(--ink); }
+  @media (max-width: 900px) { .picks { grid-template-columns: 1fr 1fr; } .pick:nth-child(3) { border-left: 0; } .pick:nth-child(n+3) { border-top: 1px solid var(--faint); } }
+  @media (max-width: 620px) { .picks { grid-template-columns: 1fr; } .pick { border-left: 0; } .pick + .pick { border-top: 1px solid var(--faint); } }
+
+  /* 전체 이력 */
+  .hist { padding: 4px 18px 12px; }
+  details { border-top: 1px solid var(--faint); }
+  details:first-child { border-top: 0; }
+  summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: 22px 110px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 12px 0; font-family: var(--mono); }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "[+]"; font-size: 12px; }
+  details[open] summary::before { content: "[−]"; }
+  summary .yr { font-weight: 600; }
+  summary strong { font: 700 14px "Noto Sans KR", sans-serif; }
+  summary .cnt { font-size: 12px; color: var(--muted); }
+  .row { display: grid; grid-template-columns: 22px 150px minmax(0, 1fr) 150px 60px; gap: 12px; padding: 7px 0; border-top: 1px dashed var(--faint); align-items: baseline; }
+  .row .p, .row .m { font: 400 12px var(--mono); color: var(--muted); }
+  .row .m { text-align: right; color: var(--ink); }
+  .row .c { font-size: 13px; color: var(--muted); }
+  .row .d { width: 8px; height: 8px; border: 1px solid var(--ink); justify-self: center; }
+  .row.now .d { background: var(--orange); border-color: var(--orange); }
+  @media (max-width: 700px) { summary { grid-template-columns: 30px minmax(0, 1fr) auto; } summary strong { display: none; } .row { grid-template-columns: 22px minmax(0, 1fr) 50px; } .row .p, .row .c { display: none; } }
+
+  .foot { margin: 16px 4px 0; font: 400 12px var(--mono); color: var(--muted); }
+
+  /* 모션: 동작 줄이기를 켠 사용자에게는 아무것도 적용하지 않는다.
+     fill-mode 는 backwards 만 쓴다. 끝난 뒤까지 값을 붙잡으면 아래 hover 의 transform 을 덮는다. */
+  @media (prefers-reduced-motion: no-preference) {
+    /* 타일은 화면에 들어올 때 떠오른다. .reveal 과 .in 은 맨 아래 스크립트가 붙인다.
+       스크립트가 돌지 않으면 .reveal 이 없어 타일은 처음부터 보인다. */
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+    .reveal .tile:not(.in) { opacity: 0; }
+    .tile.in { animation: rise .6s cubic-bezier(.2, .7, .2, 1) backwards; }
+    .tile.in:nth-child(3n+2) { animation-delay: .08s; }
+    .tile.in:nth-child(3n) { animation-delay: .16s; }
+    /* 타일 안: 목록 줄·그림·타임라인 막대가 차례로 나온다. --i 는 스크립트가 넣는 형제 순번이다. */
+    @keyframes slide { from { opacity: 0; transform: translateX(-8px); } }
+    .tile.in .leader, .tile.in .row { animation: slide .4s backwards; animation-delay: calc(.2s + var(--i, 0) * 45ms); }
+    .tile.in .art svg { animation: rise .7s .25s cubic-bezier(.2, .7, .2, 1) backwards; }
+    .tile.in .pick .art svg { animation-delay: calc(.1s + var(--i, 0) * 110ms); }
+    /* 판(g)에는 transform 속성으로 투영 행렬이 걸려 있다. transform 을 움직이면 행렬이 사라지므로 translate 를 쓴다. */
+    @keyframes drop { from { opacity: 0; translate: 0 -26px; } }
+    .tile.in #plates g { animation: drop .5s backwards; animation-delay: calc(.3s + var(--i, 0) * 110ms); }
+    @keyframes grow { from { transform: scaleX(0); } }
+    @keyframes pulse { 50% { opacity: .35; } }
+    .lane i { transform-origin: left; }
+    .tile.in .lane i { animation: grow .7s cubic-bezier(.2, .7, .2, 1) backwards; animation-delay: calc(.15s + var(--i, 0) * 45ms); }
+    /* 진행 중(주황) 표시는 천천히 깜빡인다 */
+    .tile.in .lane i.now { animation: grow .7s calc(.15s + var(--i, 0) * 45ms) cubic-bezier(.2, .7, .2, 1) backwards, pulse 1.8s 1.5s ease-in-out infinite; }
+    .row.now .d, #plates circle:last-of-type { animation: pulse 1.8s ease-in-out infinite; }
+    /* 지금 하는 프로젝트 티켓은 나타난 뒤 천천히 떠 있다 */
+    @keyframes float { 50% { translate: 0 -6px; } }
+    .tile.in #ticket { animation: rise .7s .25s cubic-bezier(.2, .7, .2, 1) backwards, float 4s 1s ease-in-out infinite; }
+    /* FULL STACK 작도: 보조선이 깔리고, 원이 그려진 뒤, 글자가 채워진다. 원에는 pathLength=1 이 있어 dash 1 이 한 바퀴다. */
+    @keyframes fade { from { opacity: 0; } }
+    @keyframes draw { from { stroke-dashoffset: 1; } }
+    .tile.in #mark .guide { animation: fade .6s .3s backwards; }
+    .tile.in #mark .ring circle { stroke-dasharray: 1; animation: draw 1.1s .6s ease-out backwards; }
+    .tile.in #mark .dot { animation: fade .3s .6s backwards; }
+    .tile.in #mark .fill { animation: fade .7s 1.3s backwards; }
+    /* 경력 막대는 터미널 줄이 나타날 때(.go) JS 가 넣은 width 까지 차오른다 */
+    @keyframes fill { from { width: 0; } }
+    .go #bar { animation: fill 1.1s cubic-bezier(.2, .7, .2, 1) backwards; }
+    /* hover: 누를 수 있는 타일은 .btn 과 같은 방식으로 들리고, 대표 프로젝트 건물과 프로필 그림은 살짝 움직인다 */
+    a.tile { transition: transform .15s, box-shadow .15s; }
+    a.tile:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+    .pick svg { transition: transform .25s; }
+    .pick:hover svg { transform: translateY(-5px); }
+    .who .face { transition: transform .3s; }
+    .who .face:hover { transform: rotate(-6deg) scale(1.06); }
+    .row { transition: background-color .15s; }
+    .row:hover { background-color: var(--well); }
+    .tag { transition: background-color .15s, color .15s; }
+    .tag:hover { background-color: var(--ink); color: var(--paper); }
+  }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } .btn { transition: none; } }
+</style>
+
+<!-- 모든 그림이 함께 쓰는 점묘·빗금·모눈 무늬 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="d1" width="3" height="3" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".85" fill="#151515"/></pattern>
+    <pattern id="d2" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".75" fill="#151515"/></pattern>
+    <pattern id="d3" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r=".75" fill="#151515"/></pattern>
+    <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="#151515" stroke-width=".8"/></pattern>
+    <pattern id="gridp" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#c4c4bd" stroke-width=".6"/></pattern>
+  </defs>
+</svg>
+
+<div class="frame">
+  <div class="topbar"><b>LEE JUNGMIN — PORTFOLIO</b><span>2007 — NOW</span></div>
+  <main class="sheet">
+    <div class="bento">
+      <section class="tile tall who" aria-labelledby="who-h">
+        <h2 id="who-h">Hello, world</h2>
+        <div class="txt">
+          <img class="face" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACm5SURBVHhe7Z0J1EVROYa/VIqiJIpKoSSSRGgwJSlDRaGMiUpJSpnSoFDJGClSGkhIiIQQylAJSUlI5iLzPLMea7/6vO19zj73nnv/O+x3rW/9/z1nn2mP37wjBgYGBgYGBgYGBgYGBgYGBlbG+0XEu/rBDXDfiPi2iPjYiPjwiLiuFxgYOETcJyI+zg9ugGdExH8n+q+I+KWIuLUXHBjYNy4ZEZeNiEv4iZVwzTLrf3VE/EcZAP+eBsOPR8TV/aKBgTVxw4j4/oj4tYj4o4j4zYh4dUT8fkT8eUT8dUS8ISJ+NSKeFxHPiogHRMTNI+JqfrOFYAWhozPj/2kaBJl4/m39woGBtfBppaP9TenotU7YIsoyYL42It7db9wJZvjnRsTf2uzv9Ai/cGBgLVwu/X+ZiPiwiHhgRDwlIh4VEU+PiD+xDgmv7r9/JSIeGhHXTvfrwVtExN9VOv1/2oB8jl84MLAvPKnS6VuDAXpREZQv7zeqgEH36+W6f033ZAD4fV8ZETfwGwwMrIlLR8SVI+LORUvzZxHxb2U2rnX2KWJm/1J/QAPvExFvFxHfY/d4XTmm1eBfIuLGfvHAQA2X8gMTeIeIeH4RPP+50pm3IVio+xu71cIV7Pn/FBE3KoSswrG/j4gP8gsHBug8dyoz5muLJuflEfHtEfGFEXGvosG5Tvl7y4j46Ih4eES8vtJxW7R0JRDRgRF67xYRV/WXT3hIKS826C8j4nrl+34n3e/ufuHAeQKWgE6/7cxd47trxADoHQStsmh90CLdzj+m4GetPO/2vmUQ/G46vq2t4GMi4pF+cOA48NlFh++da01qdeDasRq1rs/0tIi4vn0brhZ+HazPD0fErSLiVeUY2qc3s2uX4InlPgNHgKsUN4EvjohXVDpa7wy+hFoduHas51wu43aHP4iI26fvZWDoHGVVnkFw08Ia8RstEpbrTfDp5R7f5ScGDgNoZTBYYYn1TiRCM4KwONXx/Jz/dlLH7ylXO9ZzbY3+sczw+va/KMcZ3Pl+ONHdMx37Tqu3XnxGuf5lfmLgYvGexcqKlVSNDt+smf+3I+JbI+Lzykz5V5XOJPIOmf+2Oqlf44TOns5aO187tpS+vtQDNgg/p5XuqcVApmPU2VI8tlwPKzVwAIDFyQIgOnj+fktEvH0pgzsyQCB8QumI3klEcx156XERAjcqUz/eIgZMj5Cenwtbcq3E72sVyGUQ/v+w/M+EsRT4OXEtzxi4QOBkpoaEWOKvERFfXlwTHAyUqY5/UeQddO74HGFV/olyrbNBEIPqp4uA/FteSRNAcL5Zue77ijLB8QkLbSkDC4EbAAKt2BcMRgyEt/WChodVOgrELAvP7I5l3mny8XyO/7m2Vl5la+dq5fz4WlS7N/KPjGTf7JXVADw/nf8HizbNB88dyv2GinRHwCoq/h53g3t4gQrQmb+g0gFELOe/kQaAd24vXzvmmplDJq0KWUMEvYfVm3urfm4q+8vFaIhLdgbt87jiojGwA1wpIn4gIj7FT1SA1fal1vDeGaaO16hnpp47X6NNrtmE8vv7M7NGCNUxx56ZjhH7wLHs34QKduBA8b2VDrAteafZlNQRWwOqdixf1/o9R5TFzYPgHT/3DxHx1qXuPqAckzs1MpWXh34+1ffAAeHzk5vwoVKr8+o42qIssHPMBVodW8KCMWsT0Zav0T2/IdUhsQ0E4KM1q70n9KBUfuBAcL9KQ02ROlyrkbehJff1cgjmzMr5PrUBsOQZfl3+zd/M039q4ee/o3I9hMyExm3ggHDvmYZu0VSZqXvMdcB8rlWmVnZTQiVMmKYfX0I4ugEs6WiKOFZ7r9dY3Q/sGIQB/lgRbmtgOfZGUuPVGrBGlJPFtOc6L+O/vWzt2CasWu1eEGpNWKfW+R76hVKfqJp1rHa/H7L6H9gx8G2n4r/AT5QkUVON1UvwxTnEsHU/dfTaudY1NaLcEv5d10w9W2X8WC8hd3xEcbueut9HeSMM7B6oQR0MDAmLuaH8/6nfNdJ5L6drW/x47Zo1acm7t363yMu1ngWrNXAAQGshQbFGrQ7ZathaWT+XyZ8xdW3P/Vvk19Se5b/Xotp9v8QbYmC/+MDi2ekNswZ5J6+RX9NLrFRTznCte7eO75vErsmxcGDPeHThTWuC4zadJF+bO3r2pKyRXztH7n6QKd+z53g+31t2G/q9Uh8YGAXipAm03zbEcmAGCGWo3bxRtiXvxLUOnsvWji8lf2bt3Ka01js64T2Kdoj/iQHAApzVrZz/kYj4mpIsgGgzfpNUAKvywAJ8XfE7EcjK4A2yFuWOgmGnFqxS++3HWlQrN9dJp85BrH6t8/nauftsQgTWy4N0Cf1xRPxoUa2ukSL+ZEFCKDriR5bfRG95Ze6KcmfZtpPOnZs6P1UO9gkZohXHTPlsx6gFw0zRXFkMjbcpFmO/zstOEbEK72ZtP1Byar5L+R+XWyqLRm81eC+pYecauIeWXu/lt3mXpdcsfRZlpuqaFRLWx2MnWuTP9OuY4OSAN1CAYJUTOeWK9AqFaLCWKjSXz52gdh+nnjKbknfKuWe1vmOOest6Gf+9FuHfhG8RbhYE4XCMVJBrbBxy9CDbGuk2almPp4gB4DNL7mC1xuTYUvZgF1R7z/w+ve83Va51vEYYuNh7wI8vpRcXfv+TIuLjI+IbUy4m2go5j4iyHLxPGsizBdnL5HgF1RqNCDCP580d2cvrfOucrpu6Pt/Hj9WIwdsqq3fx8/6b91k6OPO983VL7gHRcQmC8eNLiOeRe+irvJEj4p1MriNXES4VxCjw+2zzDInfd6Iy6Qw/UzIZkMvHzy9p4Nq1m17vhHYEFWGLh+59Xq0j95Jft3QgTb177VirvIiBQAoaBzvYKMLsySU1C7lYYY/ODl82UckQfCMqtG2MX61yU52jdbxGlPXB6TT1rBYtLe/Xbno9igdnK2uk1cqPOz07It7cGz4ivqKcx45wRz95DqBSeiq6Rps2rjrGXAeZOudE2ZaF12npff1YLy29Npdnz7MpWSCX1f/8nRoMzPi1vctI4S75gACcs8LjKxW1S1Kn18zVw//Xru89viktudeSslOU74OspfSKaxNJDWogiRnn2WDkLLC080819Ny5TLnz5wGQ79G6X+7ovZ2+t1yNpq4jP8/PTaiA5wjBE6MaWfT8Oewwg0Ds16xFZJRjZxsHMsBZBNrXclcuIW+wWif28yJ1+qUCYr6X37N2fiktXY0YAGjG/HgvcS0uCmhiNmVDtyEMamSX83xEJw+yDXhlONU61hS1OmM+nzt8q9wSyvfx//PfHsK1+6c65Ai+IeflmSNm96kVAtWzq5bXoN73g/gmtpo6C5DC0CtgDerp2FPn5qh2be3YpoT35FSmajoJmhI0TUueywCY00451QZzJlaLnH17iqbahG+SZg+D2cmDzRm8ElqVM1VxvbTGPfJ9lrIo+fopdmvOu5JOwuCY68i1e29Cc/dhAODqjJzg55z0zX5P1QnEb76NpLsnDbIReyXwl4p0jYMLqJtQreKXkHf8be/lx5jRSVCVs1s7UYZN+2rX146tSQxMdVAnLN7eZv4+ufP7OQaRu3XDjt3EO80pQZa/XEH4i+AT4rlsvML89xS1Kn0pcX2rA2xLND6KALQ4fi5TLXtb6/eahIBNfiBvlxp5Rxe1MmZDnCNDncsnJ7kSvE0R8PSB+isPwFqeSqfeDr3LTivSu/gK1fN+ImZ2nxBaxMxIGvKp+0+d66V8D1LOA1IjerlcPlM+lstkuSWfR/CXFkv1yf8Mimun/nPUwPmJJZwPu2vRLaP6kg84acm9Yg+dvJGX0pJrWSlyrqI1yfX/+h+BHIusBFNWg3xd7fv9dya0TLy/NFiu6apdS9z30YNMbhKUiOl1aFXYhqi87EU6RdKk+PEW5YauNboTmpG8F2++j//2Yy3yzrIGUQ9kfSaqq/YebIB3teLIBojr9TJLiUGAzcG/HeE+D27OaSX4cesvR4eXlA+hQh1s5uaVVCOvsExU3gsXGHHoTJvqvFvvkImBuDSW4SKITfIIcNeMnM/hlSt8U1kNrlxZBZx66mdKJmAwsj+B3ytnqz4qMIPwUV9kx3F+k8+Hk3d2zQY1np5Z41HFaat1/aak+6xxr0x+v108Y4oYoMzmWH75rfrVIGBV8PBEuSf7KrD2e8P3EyP8WXYcNg1O4mSgMDivwFqnqx0TsUcVskTtHl62h6auy/fNf6eu2QVt8zzYD3aDJK7Cz0Ff6Q1VgQx1/h5L66JWnt/cn5QqqEKzavgh/iLHCnYY1C7l/vGtSvFjolpWglzWfzvBr/eo+HQv/3/q3nPPduop6/f031PEKsnEo7xKfh2sag9YcSm/RI5qkb+DfiMXAlKnKIMeK9RJ2Af4iFpFZKqd82t6yPnNfC/YJ1xy0UPnazZ9Vr7eeepeQlM2lTLRSe/Kd05ZiCmHRkWKAqluM2uJqrMXCPm1SSzf248vIbSCwg2SfMdGhkcPBVjUOqZXXOv4tsT9qNQ8i631DO6pDbp7ic5LwDhqRzcK1Si/q6K2et6f57C3ggvpSzfJxgXC7y3iPWjjVkaPHoINypFjhFPq3D3T8aMDQe+5QqYajuNrzCYi7jO1bG/6HF2XLZo6VhPcnQjzvHxJHdjT+TMxU6Ji7nl3dspEp/+L9l6P9UbqwKXL/mv5/vkdWMXmfJv8Wv8GNuTLwIcM7R2D4xJ27miQ1Z74kLgfiFeKD4BaRdWoVo6Zck6NtykR2MFOKbAYei4dc8q/h2uy9+MSn37qDf8hdOQ97BaZGd6ylOe3WAoSDGyDJ6Zn1Oq8dszP1/6HyBrn0KAjfPLo8Anp49DcPLfx4aq01gDwY2vSXIOpjB9jxpN1U+fpZOLNcydlpbhLqhf062IXelYMVjHqr8ZKOjHra6Nr1/yQlmQN4C7B/WrtktvS303n/ZiIzBo1XNMPHAvk84LRih3Ea0JUrfOrkuYq8xDI342ZGtUj/6NtIudpxlXT+d5vY0B5zADXZUMgGp+8ibjvlfxt6dy2wFCmd/B31fF8jvfUQPdz+TeTxo39YccKlmA+ig/no2gAr6hcCfmvV0yNUIf2+KVfBDHQ0Wuj/s1gGXc1LjS1CkzVAYQM4UZHkkzlMo+x89uCmN4lPkoMAPmFOfn3ncQONMR6qlFlzKgJSOrkXgk95GzGtvfjfafUiqI8WP05CGx0/MtafQDcQrw8np5iJ5xq98/EQMKI5QHmGApzuYfZ+bWAK7u/0xQREyL1M6tZ69t4/6MHGb/4GGZoQN5P/1Bomw7rlO/l5GVrxLu6Gq9F3JMZUAOG308o7E0Nn1u5hxqa2Rv34FomBr1/XiFgnx4ZEZe0Z4CsqkT4v5MXWBk97uwiBH5lAYQ1nFIb91inDxqa1cT/5m03N6VWR651dP/dQ73l6aw5LhbB7b3s+zMILqFcbvBaEigSyfqKloltih7qFxW8YxF+VRZt0z4ER1La+3tOUdZ6TdU3atujxSenD4HnZYn2D5z6+KW01r1q96llTnh9+cvxnpkqJ5xlYmjNymRHkHCs9/nJoslBm9bCHUzVyzWX8UI7ggb3JhNOjfh+1MjYSY4Wzyofg5oQ5I2sIZZzZrqWgYoGdOFWlbtGJc9RfpYCOvg/a1wwJLn3ZA1iBSFsBlMdE00Z5Rh0KAx6dlGBfdL9qU/XOO0ab1uZIDYh1TmcAnYKwmWPFjIEfXj5/d3pIyE6f+YHMzE4OD6lYVhrtnFiFq355ORnvSgirmXf2wJbPXHN8yPig/1kBXR69PzS4U8Bq+zPpvd6WdpdZ9+oCfGbDgrqH8c9XLCPFuwAggkbYL6ueV7SwaeEoDlSpyRow31cNiEaEf/3/K4cyysRhqil2NUuiRKqSTT2YX5yz2BS8PrkvRTksgk9wh9yrGBJ9o+D4KOnBL4eYrXAQ7E3KqxFvAezThbQYEcQVKW6bQmfFwU0QPsQcnuAHKR6o02eVtysUfsuWQnySnsStoDLNbKIMdPCFrQ+vud4D2EgmvLLgdDD+wyGIAbbRmNCbN800Ab++6iDsfqj3/+Qwp4xoeT8QXOsaz53aBPORiAligaAPu6BJVvEFI+/FsEa1dgviPeh0ZjhJYzTWJJR0NzgdVkL6B94UyCDUF9MOtQpwixtzCDAAKaJqDUA/Dj95OiBsJg1PZLskRG8ArwSvEJ0rHbciVl7ii2io8PP59VJvjZcd5a7lWwJ+H0mDoR4Yg+oU6V1IQCJjfE4Ntd+Ov9gf8Ax4gvSh8FWCArMdpqqnN7O3yqr32gZCBFUsqlsYWUAfGB6z4F+KKCdzbQx6PG/ZDwmGtgk7QRTI2+vo80IkSFXXDoWmSIErJReAV4ZXiG9NDX7c0/C63I2CQ0A+NdrpHccWAZ2kKceb1f8oNy57+0nVn61DZOTrmPFOGrA/sCDwxOyFaZAJ5P6M3f0qQ7PTDKVACtfOzV4OM6yrPfScVanq6R3HFiOK5SVXRMd7iK57tUH5BEqBUNuK5z25Ft09GrQW5cPgQ3KyAEy6pR0cJ8xMsGvt5yuvPP7ecgrmkEgIZyB0GN4GlgGtwGwIyRAo6YVOk9WeLYC5AV+97iYHARwW4C/q0GW4IznWYcVqZP6DM6M4Zs3tzp6jahsRWzl6xDO6fy38hccWAV3t7YiE7ZQc4vXJtnaOvUoVgCCPQi06M3eBZuBYaTW0fOxfK6WxLV3AKACZYBqdfHrTibp0gECVXfWANIWAjKYt+P9yzki2vj96FT+ZCDfmBa7Q4WIHXK2Ref92BSx+zjannyMWZ9Bgd+/R2uthSsVY9Anlo3AsYyytDPL4e+DFmpJPp5jhScLllsIvl60b/YEIHwTsGs8v0/CEOZouUX4zL+0o9cITZPYrTzgmH3w8cmxs2vg6sVDFIOQR5XxLbXMFJR/70Zgy7EDL1H/ZiLIgIJ2cjtjjQdEEvL7qPMAtbBGSnRibb1ia8QMryVYMw0zDysCkVtrAaGOBFOKEagRA8IHRSau5btOQvddAAvk36l6Zy9gP0fSZHCL8vvkZLMrJseoTWd4OhE7iddcljPV7q0ZhpR7awA/pzU2+MirE/LOqbheEPfgWSyeXfpBbQJjAxVhKrruaMGSqI/NiaSWEKrLlm+PUx5kzK5v5S+0JTDs0MCo7+B1MfqR5vBzIuLORd4hDcw7l4Ag0vyxrH91GcTIBDXLKLG+pwIZQjXIWZVrgfS000l2egcdgUAH1+lvuiLUyO+DGX5XGcXW4N3vExGfWnxoGOCwDvsG8cQIqLgvk9ECzd7XlAF78zKIcWxcCoXG5lUu73qpvzjMXcovPmXkmU+d3zvuJlS7j8IyjwH7skazGmKoenyJe/A6qxHsKwoE0iIuQS1aTATLx6DnvmeFnFsyW4F7GqKHuKcsvbAbA/8fSljWIqmhWwFLSwZBLdWLCNaUPEHZSHYWYDseVULu9C37wFLinsw8JIVdm/c/dpC3yOtrjmoTExF0JD+4rj/AgODr16qdFW56NG4PawCVIUsfS2otJhh1GNmAc+5ML9NDLO+7hPa0IisDBi5UrNgeXlGWdJzBULnSUfifPDeUQ9VJsAdekz1ZJXYBhHQCVpggENw/s2xgApHKns2qSbVCVm8c3F45kcK9leJFmMobxLl7XWA97BUIOfh38OGoM6nQ7OGZBSKc315ejuVVgSXZ/XpeW3Y99MpF1YZRimzUVDQzEYMPgW8OqDjJ0UOHwMBFRgeEVbIu3K1ocFrswRLCK5WBgaWYTnnIwNvztiUYnzrQLqD4WlFXLcCC+neLajuIniSkMkSFyezSmt1ZETx7dO7s8iLMnU8hePpdc6HIxLVooeh4DDR2rL9OiQLDDI9hC83R1D2cGNDYGcgBhBrzfsW3hX21mPEROF9Qlvxaoi0RKwUaGNwojgG4L+OoOLVxRWZ3nS46m8XewOxBp7pHcT12Xh+WAVZCASnwqXQmlmnCF9XxGRyE23EvHygirL+ecEtCsT+3RrkMgws2hxWEAZEHHu8Fe0D0EzaOHtBRKItc8qElOQArGPdzdlDuw8eOnLtI7UB8MCs0E+PZgKWQzpRTZNOJYC1aYGnNqUrQGNBx0CzgT1IToKlkgrBhfRhYLd61RpRlYDHA6JAI0lg0n1TO8zzen3deU2+NDp58+xoMIr739l54CyC3EGvLagTbSD0ht9AhMeixMjLpwDqSnQ2X5vcrLOGmyH4/tA31yjZItVSPsJsnCeIFUHWR3JXKYPRj/JkDBhh1BioQiyvsAx1FFmHYKTp6np0RMAXyksK74pmJ8NlaksWWwKrBpkiN6uwK99klYMFwBc4WbzpnT5rEGhhADyoJxPybe4lJAdsNLCMrNYJyL3DtyCGqtH3eCE+A7YOVrZ07eiDgqQKY9ZdYZrW5NsQMxfUIYNr3lsGgGGOtCHOOVNcvMxArEht34LaAezIp3GvuCSIFbewDDH5mYj1bvkywUMgs1CkDBY1ZKyCpNdjp0LgloLmCjWPbJLRBsHqsCmS7Rl6ZEvQZlMg7rWdn5NxMPJt9y2rwfQ5OBqRDUQVsskcVmYK9ARA8nadnAKB63Aao/wich/3QKqCBBb+/T3yQfS/aIk8aLCKonw3mYKfQVskAlesItoesF72zLIONFJd0dPYyIJlZbVM/Oji6/JY6kwGlsqyovQFUJ4Frl1Gvhtg06SkNhwoTBys6Z06sC7uA/p3/1/Tzl3qVAQBrhCfjPsHz3KPSB32NfOZmtcyJCbYFMQwErHjWP9ibp5ZByAomOYlVRWWOOu//Jsim8DW26oFVUWYH3Zff0vzA3qyFnNeIGfYikFe/3PkR0H23+xrt0iDICkGQE+wUMQ2yDYhoIwZK3rKJlJNnAwQgfThhiD1o8YeC5/EUiU2p7TO7KQhtlAB3UQ5bCh7RrA67kfcAQEuDQQnNitcFZfcB5fthIvKcTBzDIVH2HBQMGBjPAtrwAf51Knc9tgHCF9HysIyigmsJRJ4hQkTFQ5j31wLuztrRkQ2qLwKa5fk7l7Uu78PAX6y2+wCsWjZG0u7497vmiUGMfEUgEcbCkwYzucIAp/g+1H41wQ71Zm0jClSZXlaNDmUV6LagEWVHwJVi38DlQN/XmyZEG2lDrA77Qt6TmPZGXezBS7BwckVBe9drQDxK0Hn04SzPNdDBcwWhzoSX13KP1sEBW8LgUIfP18ODrgllseCd4HP3DbJa6NsITOmBvC+REfaJvEeAiNUcRzr9ZgDQLxCit9XWHTzy3lUtw4mygEFkSAC4QeRKq81i7mKrATPnmbgUsEB0JBoS3hWXjn0i+0z15i1VRrY1WcEeaABIdSxiBcX6qzbC34n6XFMrdZBQwDjLYC10EJlAleQ7AubBgxbJ4QYeKnmKzdoGxPDyDBqQdI/7AoKtvk85c6ZANgV09GInkan2CTI+qJ6QVx5QVNKsnK6WhXpXtKMETk7SBsDW1EC8KedRL/rOiSRYzWlEciYHNodz3hLaVZY3BHQ9A4POvpBXQbxU58D35/qQ5XhfyBkySAwgoLbO76XBwAA5WdChZTGkIWvAJsB5pcRz5FUAVaDAvWueoC05Yw1owwdYkX0s3Tl/am+GNFYA3g/hEnYNjdq+wISnCYtn5yg83MH1LUyKst8QhHOywNSu3D24w7bAJsutQHAihVRxOa8kyBtxi+B9dwUsmxoACMSe8XpNKM8+xLOWuAwz6Yjn5vp9eVfeJb2zs2tiyZj5EYIlI9CGJwviRFUhm8R74qCW3Zhr1kxcerUSoFtGs7BL4IfDs+hkNCIsBu+5Jq5sKWMyK9EDT0m+pkp4CrI/MMNnr1XsFnoX3CbwJpVlu6biPhmg6pIMsJQ1ITekWxNbbIf2ymVbnl2DzolAx/NkHIMYiGvsIoknak6vuInrBV6i2V1iavVdC+jy5Ybi+ygTgqp3oU3Z9UWD9KSB0CphZ2kjKIKIpZPVA2NQC9KTbxM9RZRWr3ck8gcBI2rUTKgs4d2JemMWnAuYuXxhb1Ddes5UntHjZlyDGxWv5wVWhrQ/NWu/y2qwSkyIOMwJ1H1NS3jU0O4wELNDi893MINwDWZ1r8wa8Ayl05HFbFNgkif7wRKwiTOq2FZuUGQF5byBPWPZp9EZsHwjxxAGawlzX+oPWwi5n4h2qbkinlrPoT4ykD9+yNwhaoMRJQkxCScFZjYamo5AQ7f8ehzyeyE8sAdTwdj7Arpu9gCgEeFzl4RgiqgnBkVPlNwctFsjJHaIwJq1jXiwW0pyi8Ypb4KYoUkCpYiruwHpMvclq+wVSoZLBBfusHPaDCpHnYdKOUYw65H8lSitp5RJACc6/OHx0UGGgFXCuMfMjMYE+aYnVUsvYK3cTx9CpoD9WIPdIC5bthgUAtf0AgUMCg1CIu3OCiRTzWmw58Ig8+7xtYDpgX4oEB05LIcjQnRcQjuZdfGrWgL4dTRy+X4M9BZY0VQu23LOBnk/4LkcMPD8cm7DX4QldmAzqOMx+7IiEZeRs3GIkEFIVIAmC7YT4yPXsgLjCIi1HiGXbZ3Q3ig6jYmNtoLHn0IW7lEjnx2yXronvQfBLLlxpjRAA22gYxfroeTAuJCwaydGPITyrM3yPEpzxErds8tOdlo8pd1vuqFUiFDNmOXwPYQhAuoHlkNpyemsLRnjhmVmJskt2id09dg4PO4Y1SpyDHHYOYHZHDAU6h6bxoIfNeAxpQtGPdcDKpc8NjKG7dut91SAD5E6n/bfmgJthTUdbRHC/CcVj02cATfdTVMTGm35uLJjztlBkUJoQZaA4HYc5tZW350TCCii7rGrzBnmdgG5dLMaESFGkuGzA9oGKoF8MLgTDOwPJOfVKoCT3b5BHiWejTB8tsBYJc/Q3rjWgXWQ4zIwhu0bSo1OPtKzhnIDIUwdgvX20EDu0lZWtW2RHdLmskqsDeWCPXu7DgKVGoGUJwNvBJ2fekETswsgwMoGsE9VJFlBtAHKnA3oLIC/iAZBK0j+HKFZcpfuH8rMhjC8rz3TMGSqvfFPOivgp+8OcNksjk554I2BQ7v2k2F1Ud3XPDJ3AazHeibW6LMCyatqzm+Y11vBE+cIeW4SZYYT264gL1tcGWoembtA9gPbZzaNg0eWB8hvfxH66UMBO7CoLlw2Qn3MzjS4LJCahUi5TaCAFXx3UEXvIxsbO/vkVCibbu5xssibXjBTEELZAukzprZROnYoCAhiZ0wS30oucOrNECHIFYWOzyrDXxKP7RrS/0N4ApzzJNdEdpTDZZdQQgedn/MEi5wycg6gTATe0+lJCKzosanwT9hOVhVcH7RfggYAdoCl1vhNoWzREBFhAw2QboQckaosHLEwntDISgsOkSnhlMEMicsI34/DGcHjHmSi+OfWFqqwk56WMBNywNR+vmuCAH89V96oAw2gL87ZEDLlnPjnDtxIiMGtIacfyUS6SDojyQX2wfoIxGjrHU46A9xaIIsEG2iwJRFLNR2f0EESPGHKZ/YaaAN1qtxNIJIOk3TsokCyAr1Lzm1EG/OuAxPA/ZalHO0HA4E4YQbBSWcSWwGElBKc32KR9okcfZYD/dk3bGAGBG/4rukQs8rA4SPvbMkE5rLMwAzQZNSEuV3mtxlYD7I7QKREGTAQ4IKBp4WcWDeH5qEhORWg9dk089shAz+jvHvnWYZBzgHvxKmdXNhEWXlt8hZIpyYIX84PGNgxB5eSY0JWfzKJDQPYBkBdlzu+/seTMW+hSgzr1EA6dpBXqRYOesh59bFkq92I6x7YAMrF7wMAyhoF8o1+Xvp9SGAQL/XdwXt2zWAhVtJ9ThDZrwk2aIS/bgilPFfHz3LAsQhVN22kTJ9SUZI1gbw9cyBZQA/IA9STimYtkAJS7bQ02fBAgqyIOMmRVzSvBtCxqtXQbm3bMcjriTo4s4ICe4TtKqyyB9mBb5fBPScPkjVRiVgNs1ClleAsc8t0gFiLiwIRfmqnU9LWXQhuVSoSnpJlXHGlItyFDwl3Lrk3DxFoYXBNFmBTdrFvWN6hcipZ7kAHrl12iZGakFjiLAjjX75Giu+1gFyyJOKJiCzYODYAJzU6AUK4DxM2SIQYLg1rgYD77EnLZiC9u+H0Al8fbegNMYENrIjnFl94MhGrklsehr0C4pqYG4zs8Yt7Nyzdq81prUb4PpEdG39+ksviyUmGNTIr4EuDsYmVES3P2p15Kcjch9+PkuDybZumURxoAD93Kvf9S2AM/9cCZOgQxBbUYpEvAnewWIc1iIkAIyGxvdhFUBKwAlEf5FAlce0+QeANq5YyfmyyI+jADJ5YKveKJb+kOgO7lBwi2D8s7yLpRHQWBiNy8rMB99OLdohdZYgDhsjLT1pDNrqgcxEPwezqu2fWCC0RioQp8AzCUrcF8cWwbnr2vjJOnBUQMJlJJbxpk4ZHWrlDANZP75DILHRi9hAj7LNm3e3BZYsvPSsLbs8MHEIcfQcYEe7ksI+1DQoxuK2lMhX/f5Y7wFwEvrFU+M/5iQPALctsTjJYfHnQh+/DH4ZYCVgg9gHLqwT/M1h2Ba3IuD1jwR/YA3AZkGq0dzfJcwIZ2WCn7l9yMNV8h1gBEF5v5icWAsGedthXsP1AQY45RW068KZAU0T9tBKQsWMk0Xebglz/aoN95hwdKI2nyscQNVAHRikE6V1AGi5W40PRvJ0NUPdpACBktvbAGtgN2LdN9d+yyQzsGE9NjUBiqTmwO+KhJ+XdZX7QtUCiLlS51DsOcAMXiBx/+pKZMEM0NGwWcah4TBIm0RyRD3QfGqQlIGGX6hvClWPggoEApgbBOrqmL80+gWFPmdsYyFh3EWQB7hR4xl4kfAvbs97369BA7KwahixzSwVjfHUOnZfFEn5RwHEPHyXqF7d01Kv7SrM40AnSi+cZCh+iXtx1JunsvvApFhVWs+LuCjfyAwWEd3qSgloi44EDANbQPAjwU+8BarxDY50wVu1rUBKAj/GsBiW6Uucnie/AAQOfm9xgD98gQH3gjdD+YtCr7Nw1RvrzwwR59cWvqvHmIsnm8vScG3BzlquDqOZlOnZ/ORC4Xwsqxdx40FS4HhkbajsoShNzTkDDk+sN7dpFxhwPzIDOT0Pl/WiJ1MIlWI2o1eBpqcwc8G/H/XqfufUvEszmsDS58+PuPGb5IwDOWQ583rVDIgMAv5XXlrw9vbiFHzhS4D91Nz+YQLYNqTpFpKYZGp8jB4E0f5IalSDxlsrvlEEgTWsmJ6g/Z9/4nZLYC0e69/bCA8cH0vSRXl0NfGqJdrcBq2FWFpA6BdymhGYOnBCekxqa3dmntmc9RdzY4naZ+bVxeZ4YUAagRh7W3hMEOesznzu39y4Gsn1aZHcJDIU43QHy+eR6QPOT44TJ9jZwomDmU4oVNT6ZEmrAPQFaEwS47woE3d/RDxbA0nxVSV+SO7/YnoEzA+pTYgTUEdilckliJ1aGVkgmWdhqm8KRCoUUJ1fzExNAgOWansBzXBde6AcLyECtDbdH5x/4P5Db5g2lQ+BNeu90jtXivul3BpFoUzEINaBd4Tk4mPVkUZan658Vn51NgTo3d3yo5/kDZwIsvqT6U+fAiIYOHD99hMPnlexzS8AuNjWgeVGKxBcXfpy9khE6r1WeiWyinD+wa55PaMlKhSEP1ab8o8gIMXj8gSrILworpIFAjk4ERxzBXlc28OgBlmiMbi0BmsHEBhY+K2dikJBprgYc0XpAglzipnVP3BrGZtUDs4BVYdd6dZycge3JXriBnk5Kgluy35HAihBPUhaS06e2m4yvAgCVJekQf6LEPWeI3cp0EyszMDAJBFBWAe9ICM/7dpNobTvKe3i8MxnqyAwntoescdlXamBgEUg/mHdBFJETk+xrS7Q6uwQqUPk/ifCMZV+CgYGtQTY1UjL6QIDI64+8QHRVzXd+bSBnoNcncuz2ZZb3d3qGXzQwsAYQLp9VNCq4TP9AEXpz58OVmN1u8MTszfkzt+GGQCZqaZJw8POO/91n6vQ3sGfQYZETvrXMtq+pdEaIgfLMEqdMVmWMWmiIEGxx1oM4jrCNChSWC56fcE40Rqgt8eVBWCYHkt9fxKC8iJ1yBgb+17KM8ImjXfawbBFWWTaVxhWZFON+voe4jlTxqEsPLbB/4IyBUYsdGh9R1KYY0kgoy+4xdHrvyDX6t+LBir2AfKisEKw0ZGbgvuwEPxLTDhwdYHtI1UgCrwcXQZbBgkMe6QZxvUCnP7JZDAwMDAwMDAwMDAwMDAwMrIP/AZ4UgS1SutetAAAAAElFTkSuQmCC" alt="이정민 캐리커처" width="96" height="96">
+          <div class="name">이정민</div>
+          <div class="role">SI·PLM Developer · 차장</div>
+          <p id="intro"></p>
+        </div>
+        <div class="term">
+          <div class="cmd">whoami</div>
+          <div class="out">이정민 — 19년차 SI·PLM 개발자</div>
+          <div class="cmd">career --since 2007</div>
+          <div class="bar"><i><b id="bar"></b></i><span id="bar-t"></span></div>
+          <div class="cmd"><span class="cursor"></span></div>
+        </div>
+        <div class="code" id="code"></div>
+        <div class="term" id="ls"></div>
+        <div class="links">
+          <a class="btn dark" href="map.html" target="_blank" rel="noopener">OPEN CAREER MAP →</a>
+          <a class="btn" href="#work">SELECTED WORK</a>
+        </div>
+      </section>
+
+      <section class="tile" aria-labelledby="era-h">
+        <h2 id="era-h">Five chapters</h2>
+        <div class="txt"><p>19년을 다섯 시기로 나누면:</p><ul class="plain" id="eras"></ul></div>
+        <div class="art"><svg id="plates" role="img" aria-label="다섯 시기를 층층이 쌓은 판, 아래가 2007년, 맨 위가 지금"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="lang-h">
+        <h2 id="lang-h">Speaks your stack</h2>
+        <div class="mark"><svg id="mark" role="img" aria-label="FULL STACK 글자를 원과 직선으로 작도한 그림"></svg></div>
+        <div class="art"><svg id="boxes" viewBox="0 0 320 196" role="img" aria-label="많이 쓴 기술 상자"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="now-h">
+        <h2 id="now-h">Now building</h2>
+        <div class="txt"><p id="now-t"></p><div class="tags" id="now-tags"></div></div>
+        <div class="art"><svg id="ticket" role="img" aria-label="지금 하는 프로젝트 티켓"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="dom-h">
+        <h2 id="dom-h">Domains</h2>
+        <div class="txt"><ul class="plain" id="dom"></ul></div>
+        <div class="art"><svg id="bars" role="img" aria-label="산업군별 참여 개월"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="pos-h">
+        <h2 id="pos-h">Step by step</h2>
+        <div class="txt"><ul class="plain" id="steps"></ul></div>
+        <div class="art"><svg id="stairs" role="img" aria-label="직위 계단"></svg></div>
+      </section>
+
+      <section class="tile" aria-labelledby="cl-h">
+        <h2 id="cl-h">Worked with</h2>
+        <div class="txt"><ul class="plain" id="clients"></ul></div>
+      </section>
+
+      <a class="tile" href="map.html" target="_blank" rel="noopener" style="text-decoration:none" aria-labelledby="map-h">
+        <h2 id="map-h">Career map ↗</h2>
+        <div class="txt"><p>27개 프로젝트를 연도별 구역 위 블록으로 쌓은 인터랙티브 지도. 끌고, 확대하고, 따라가 보세요.</p></div>
+        <div class="art"><svg id="mini" role="img" aria-label="경력 지도 미리보기"></svg></div>
+      </a>
+
+      <section class="tile wide" aria-labelledby="riv-h">
+        <h2 id="riv-h">Stack timeline</h2>
+        <div class="rivers" id="rivers"></div>
+      </section>
+
+      <section class="tile wide" id="work" aria-labelledby="pick-h">
+        <h2 id="pick-h">Selected work</h2>
+        <div class="picks" id="picks"></div>
+      </section>
+
+      <section class="tile wide" aria-labelledby="all-h">
+        <h2 id="all-h">All projects · <span id="all-n"></span></h2>
+        <div class="hist" id="history"></div>
+      </section>
+    </div>
+  </main>
+  <p class="foot">개인이력카드 기준 · 기간은 참여 시작월과 종료월을 포함해 셉니다.</p>
+</div>
+
+<script>
+// [프로젝트, 시작 YY.MM, 종료 YY.MM | null(진행 중), 발주처, 근무회사, 직위, 역할, 산업군, 스택]
+// map.html 과 같은 데이터다. 이력이 바뀌면 두 파일을 함께 고친다.
+const P = [
+  ['통합생산관리시스템 1차 운영', '07.02', '07.12', '금호석유', '버츄얼리드', '사원', '유지보수', 'mfg', ['JSP', 'Oracle']],
+  ['통합생산관리시스템 2차 운영', '08.01', '08.12', '금호석유', '버츄얼리드', '사원', '유지보수', 'mfg', ['JSP', 'Oracle']],
+  ['SK네트웍스 관리자페이지 운영', '09.01', '10.05', 'SK네트웍스', '버츄얼리드', '사원', '유지보수', 'biz', ['JSP', 'Oracle']],
+  ['삼성생명', '11.06', '11.09', '삼성생명', '버츄얼리드', '사원', '유지보수', 'biz', ['JSP', 'Oracle']],
+  ['중소기업중앙회', '11.09', '11.12', '중소기업중앙회', '화인에스아이', '사원', '유지보수', 'public', ['JSP', 'Oracle']],
+  ['KBS IPTV ADMIN 페이지', '12.01', '12.06', 'KBS', '아르고 인포텍', '사원', '개발', 'telco', ['Java', 'JSP', 'Oracle']],
+  ['농촌진흥청 ITCC (국제기술협력 시스템)', '12.06', '12.12', '농촌진흥청', 'RMBL', '사원', '개발', 'public', ['전자정부프레임워크', 'Oracle']],
+  ['농촌진흥청 농업기상정보서비스', '13.06', '13.12', '농촌진흥청', 'U3CNC', '대리', '개발', 'public', ['JSP', 'Oracle']],
+  ['한국환경공단 좋은빛 정보센터', '13.12', '14.02', '한국환경공단', 'U3CNC', '대리', '개발', 'public', ['전자정부프레임워크', 'Oracle']],
+  ['송파구청', '14.03', '15.05', '송파구청', '아사달', '대리', '개발, 유지보수', 'public', ['Velocity', 'JSP', 'Oracle']],
+  ['KT(정자) 차세대BSS E2E LOG', '15.06', '15.12', 'KT', '펄소프트', '대리', '개발', 'telco', ['Spring 4', 'jqGrid', 'PostgreSQL']],
+  ['사회환경지도사', '16.05', '16.07', '사회환경보전', 'ZEN9', '선임', '개발', 'public', ['전자정부프레임워크', 'MSSQL']],
+  ['KT(정자) 차세대BIT TDMS', '16.07', '17.05', 'KT', '알앤비소프트웨어', '과장', '개발', 'telco', ['Spring 3', 'AngularJS 1.3', 'PostgreSQL']],
+  ['SKT TANGO 상면관리 시스템', '17.07', '17.11', 'SKT', '이나우테크놀러지', '과장', '개발', 'telco', ['Spring 4', 'Alopex Grid', 'Oracle']],
+  ['삼성기흥공장 물류자동화 Layout', '18.03', '18.11', '삼성전자', '노리시스템', '과장', '개발', 'mfg', ['Spring 4', 'D3.js', 'Oracle']],
+  ['삼성 멀티캠퍼스 LMS 시스템', '18.12', '19.03', '삼성멀티캠퍼스 HR', '인플러스', '과장', '개발', 'biz', ['Java', 'JSP', 'Oracle']],
+  ['삼성기흥공장 물류자동화 Layout', '19.05', '20.01', '삼성전자', '노리시스템', '과장', '개발', 'mfg', ['Spring 4', 'D3.js', 'Oracle']],
+  ['삼성기흥 SystemWorkPlace AS-IS 전환작업', '20.06', '20.09', '삼성SDS', '한류AI', '과장', '개발', 'mfg', ['DWP Framework', 'Vue', 'RealGrid', 'Oracle']],
+  ['SK하이닉스 Solution PLM QIA ITEM 개발', '20.10', '21.03', 'SK하이닉스', '플래티어', '과장', '개발', 'mfg', ['Spring 3', 'jqGrid', 'Oracle']],
+  ['CJ 블로썸파크 PLM PPM 개발', '21.05', '22.02', '삼성SDS', '엔솔루션', '차장', '개발', 'mfg', ['FrameOne', 'AUIGrid', 'amCharts', 'Oracle']],
+  ['삼성기흥 PLM Smart D&E (OPC Modeling)', '22.05', '22.08', '삼성SDS', '아이엘포유', '차장', '개발', 'mfg', ['Oboe Framework', 'RealGrid', 'Oracle']],
+  ['SHE Portal 협력사 안전포인트 신설 및 사용자 참여 확대', '22.10', '22.12', 'SK하이닉스', '이에치코어', '차장', '개발', 'mfg', ['NexCore', 'Alopex Grid', 'Oracle']],
+  ['삼성전자 MX 사업부 P-BOM (CCB 회의록)', '23.06', '23.12', '삼성SDS', '아이엘포유', '차장', '개발', 'mfg', ['Java', 'RealGrid', 'Oracle']],
+  ['삼성전자 슈퍼컴 시뮬레이션 현황 모니터링 및 제어시스템 개선', '24.04', '24.12', '삼성SDS', '이네딧', '차장', '개발', 'mfg', ['LEGO Framework', 'Vue', 'Oboe Framework', 'Oracle']],
+  ['SK C&C 구매표준관리플랫폼', '25.03', '25.04', 'SK C&C', '마노시스템', '차장', '개발', 'biz', ['Spring', 'Vue 3', 'RealGrid', 'PostgreSQL']],
+  ['삼성전기 MDM & mMDM', '25.05', '25.08', '삼성전기', '마노시스템', '차장', '개발', 'mfg', ['Spring', 'Vue 3', 'AG Grid', 'Oracle']],
+  ['만도 PLM', '26.05', null, '삼성SDS', '블루비즈랩', '차장', '개발', 'mfg', ['LEGO Framework', 'Vue 3', 'AG Grid', 'Oracle']],
+];
+// 산업군마다 점묘 무늬 하나: 비중이 큰 산업군일수록 촘촘한 무늬
+const SECT = {
+  mfg:    { name: '제조·반도체', fill: 'url(#d1)' },
+  public: { name: '공공', fill: 'url(#d2)' },
+  telco:  { name: '통신·미디어', fill: 'url(#hatch)' },
+  biz:    { name: '금융·교육·IT', fill: 'url(#d3)' },
+};
+// 시작 연도로 묶는다. to 가 null 이면 현재까지. map.html 의 시기 구분과 같다.
+const ERAS = [
+  { from: 2007, to: 2010, title: '운영·유지보수' },
+  { from: 2011, to: 2014, title: '공공·미디어 SI' },
+  { from: 2015, to: 2018, title: '통신·물류 시스템' },
+  { from: 2019, to: 2022, title: 'PLM 으로 이동' },
+  { from: 2023, to: null, title: 'PLM·MDM, Vue 3' },
+];
+// 대표 프로젝트: 번호(1부터). 여러 차수로 나뉜 같은 프로젝트는 한 칸으로 묶는다.
+const PICKS = [[27], [24], [15, 17], [20]];
+
+const now = new Date();
+const ym = s => { const [y, m] = s.split('.').map(Number); return (2000 + y) * 12 + m - 1; };
+const nowM = now.getFullYear() * 12 + now.getMonth();
+const fmt = s => '20' + s;
+const key = s => s.replace(/ \d[\d.]*$/, '');
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const items = P.map((p, k) => {
+  const a = ym(p[1]), b = p[2] ? ym(p[2]) : nowM;
+  return { k, name: p[0], from: p[1], to: p[2], client: p[3], company: p[4], pos: p[5], role: p[6], sec: p[7], stack: p[8], keys: [...new Set(p[8].map(key))], a, b, m: b - a + 1 };
+});
+const period = it => `${fmt(it.from)}–${it.to ? fmt(it.to) : '진행 중'}`;
+const $ = id => document.getElementById(id);
+const tags = list => list.map(t => `<span class="tag">${esc(t)}</span>`).join('');
+const totalM = items.reduce((s, it) => s + it.m, 0);
+const cur = items.find(it => !it.to);
+const firstY = +fmt(items[0].from).slice(0, 4);
+const inEra = e => items.filter(it => { const y = +fmt(it.from).slice(0, 4); return y >= e.from && (e.to === null || y <= e.to); });
+const count = {};
+for (const it of items) for (const k of it.keys) count[k] = (count[k] || 0) + 1;
+const ranked = Object.entries(count).sort((a, b) => b[1] - a[1]);
+
+// ---- 아이소메트릭 선화 도우미 (2:1 투영, map 과 같다) ----
+const INK = '#151515', BLUE = '#2f5bff', ORANGE = '#ff5a1f';
+const iso = (x, y, z = 0) => [x - y, (x + y) / 2 - z];
+const poly = pts => pts.map(p => p.map(v => +v.toFixed(1)).join(',')).join(' ');
+const plane = z => `matrix(1 .5 -1 .5 0 ${-z})`;
+// 선 상자: 앞-왼쪽(l)·앞-오른쪽(r)·윗면(t) 채움 + 검은 외곽선
+function box(x, y, w, d, z0, h, t = '#fff', l = '#fff', r = 'url(#d3)') {
+  const L0 = iso(x, y + d, z0), B0 = iso(x + w, y + d, z0), R0 = iso(x + w, y, z0);
+  const L1 = iso(x, y + d, z0 + h), B1 = iso(x + w, y + d, z0 + h), R1 = iso(x + w, y, z0 + h), T1 = iso(x, y, z0 + h);
+  const st = `stroke="${INK}" stroke-width="1.1" stroke-linejoin="round"`;
+  return `<polygon points="${poly([L0, B0, B1, L1])}" fill="${l}" ${st}/><polygon points="${poly([B0, R0, R1, B1])}" fill="${r}" ${st}/><polygon points="${poly([T1, R1, B1, L1])}" fill="${t}" ${st}/>`;
+}
+// 그림 경계에 맞춰 viewBox 를 잡는다
+function fit(svg, body, pts, pad = 10) {
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad;
+  svg.setAttribute('viewBox', `${x0.toFixed(0)} ${y0.toFixed(0)} ${(Math.max(...xs) - x0 + pad).toFixed(0)} ${(Math.max(...ys) - y0 + pad).toFixed(0)}`);
+  svg.innerHTML = body;
+}
+
+// ---- Hello, world ----
+const mfgN = items.filter(it => it.sec === 'mfg').length;
+$('intro').textContent = `${firstY}년부터 프로젝트 ${items.length}건에 참여했습니다. 그중 ${mfgN}건이 제조·반도체 분야이고, 지금은 삼성SDS 발주 만도 PLM 을 Vue 3 로 개발하고 있습니다.`;
+const years = now.getFullYear() - firstY, span = nowM - ym(items[0].from) + 1;
+$('bar').style.width = `${(100 * totalM / span).toFixed(0)}%`;
+$('bar-t').textContent = `${Math.floor(totalM / 12)}y ${totalM % 12}m / ${years}y`;
+const S = v => `<span class="s">'${esc(v)}'</span>`, N = v => `<span class="n">${v}</span>`;
+$('code').innerHTML =
+`const dev = {
+  name: ${S('이정민')},
+  role: ${S('SI·PLM Developer')},
+  since: ${N(firstY)},
+  projects: ${N(items.length)},
+  clients: ${N(new Set(items.map(it => it.client)).size)},
+  now: ${S(cur.name)}, <span class="c">// ${fmt(cur.from)}~</span>
+};
+
+<span class="c">// 가장 많이 쓴 스택</span>
+dev.stack = [${ranked.slice(0, 3).map(([k]) => S(k)).join(', ')}];`;
+
+// 발주처 상위 다섯 곳을 ls 출력처럼
+{
+  const cnt = {};
+  for (const it of items) cnt[it.client] = (cnt[it.client] || 0) + 1;
+  const topC = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  $('ls').innerHTML = `<div class="cmd">ls ./clients --top 5</div>` +
+    topC.map(([c, n]) => `<div class="out">${String(n).padStart(2, ' ')}  ${esc(c)}</div>`).join('');
+}
+
+// ---- Full stack: 글자를 원과 직선으로 작도한 그림. 보조선·작도 원·원의 중심점을 함께 그린다. ----
+(() => {
+  // H 글자 높이, T 획 굵기, GAP 글자 사이, LEAD 줄 사이, PAD 보조선이 글자 밖으로 나가는 길이
+  const H = 64, T = 16, GAP = 10, LEAD = 22, PAD = 14;
+  // 글자마다 [폭, 외곽선(왼쪽 위가 0,0), 작도 원 [cx, cy, [반지름…]]]. 좌표는 H=64·T=16 기준으로 적은 값이다.
+  // U·C 는 바깥 반지름 32(=H/2)·안쪽 16(=32-T) 인 고리, S 는 바깥 20·안쪽 4 인 고리 둘을 위아래로 이은 것이다(4×20-T = H).
+  const GLYPH = {
+    F: [52, 'M0 0H52V16H16V24H40V40H16V64H0Z', []],
+    U: [64, 'M0 0V32A32 32 0 0 0 64 32V0H48V32A16 16 0 0 1 16 32V0Z', [[32, 32, [32, 16]]]],
+    L: [46, 'M0 0H16V48H46V64H0Z', []],
+    S: [40, 'M40 20A20 20 0 1 0 20 40A4 4 0 1 1 16 44H0A20 20 0 1 0 20 24A4 4 0 1 1 24 20Z', [[20, 20, [20, 4]], [20, 44, [20, 4]]]],
+    T: [52, 'M0 0H52V16H34V64H18V16H0Z', []],
+    A: [56, 'M0 64L20 0H36L56 64H40L35.6 50H20.4L16 64ZM24.1 38H31.9L28 25.6Z', []],
+    C: [55, 'M54.6 9.4A32 32 0 1 0 54.6 54.6L43.3 43.3A16 16 0 1 1 43.3 20.7Z', [[32, 32, [32, 16]]]],
+    K: [56, 'M0 0H16V26L37 0H56L29 32L56 64H37L16 38V64H0Z', []],
+  };
+  let guides = '', fills = '', rings = '', dots = '', W = 0;
+  ['FULL', 'STACK'].forEach((word, j) => {
+    const y = j * (H + LEAD);
+    let x = 0;
+    for (const ch of word) {
+      const [w, d, circles] = GLYPH[ch];
+      guides += `M${x} ${y - PAD}V${y + H + PAD}M${x + w} ${y - PAD}V${y + H + PAD}`;
+      fills += `<path transform="translate(${x} ${y})" d="${d}"/>`;
+      for (const [cx, cy, radii] of circles) {
+        for (const r of radii) rings += `<circle cx="${x + cx}" cy="${y + cy}" r="${r}" pathLength="1"/>`;
+        dots += `<circle cx="${x + cx}" cy="${y + cy}" r="2.2"/>`;
+      }
+      x += w + GAP;
+    }
+    W = Math.max(W, x - GAP);
+  });
+  // 가로 보조선: 줄마다 글자 위·아래와 획 굵기만큼 안쪽
+  for (const j of [0, 1]) for (const dy of [0, T, H - T, H]) guides += `M${-PAD} ${j * (H + LEAD) + dy}H${W + PAD}`;
+  const s = `<path class="guide" d="${guides}"/>
+    <g class="fill" fill="url(#d2)" fill-rule="evenodd" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round">${fills}</g>
+    <g class="ring" fill="none" stroke="${INK}" stroke-width=".6">${rings}</g>
+    <g class="dot" fill="${ORANGE}">${dots}</g>`;
+  fit($('mark'), s, [[-PAD, -PAD], [W + PAD, 2 * H + LEAD + PAD]], 1);
+})();
+
+// ---- Five chapters: 시기 5개를 층층이 쌓은 판. 아래가 가장 오래된 시기. ----
+(() => {
+  const W = 170, D = 96, GAP = 34;
+  let s = '', pts = [];
+  ERAS.forEach((e, i) => {
+    const z = i * GAP, list = inEra(e), top = i === ERAS.length - 1;
+    s += `<g transform="${plane(z)}">
+      <rect x="4" y="4" width="${W}" height="${D}" rx="12" fill="${INK}"/>
+      <rect width="${W}" height="${D}" rx="12" fill="${top ? 'url(#d2)' : '#fff'}" stroke="${INK}" stroke-width="1.1"/>
+      ${list.map((it, j) => `<rect x="${14 + j * 15}" y="16" width="9" height="9" fill="${!it.to ? ORANGE : INK}"/>`).join('')}
+      <rect x="10" y="${D - 30}" width="74" height="20" fill="#fff" stroke="${INK}" stroke-width=".8"/>
+      <text x="16" y="${D - 15}" font-size="11" font-weight="600" fill="${INK}">${e.from}–${e.to ? String(e.to).slice(2) : 'now'}</text>
+    </g>`;
+    pts.push(iso(0, D, z), iso(W + 4, 0, z), iso(W + 4, D + 4, z), iso(0, 0, z));
+  });
+  // 시작점(파랑)에서 지금(주황)까지 판을 꿰는 점선
+  const a = iso(W - 24, D / 2, 0), b = iso(W - 24, D / 2, (ERAS.length - 1) * GAP);
+  s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${INK}" stroke-dasharray="3 3"/>`;
+  s += `<circle cx="${a[0]}" cy="${a[1]}" r="4.5" fill="${BLUE}"/><circle cx="${b[0]}" cy="${b[1]}" r="4.5" fill="${ORANGE}"/>`;
+  fit($('plates'), s, pts);
+})();
+$('eras').innerHTML = ERAS.map(e => `<li class="leader">${e.title}<b>${inEra(e).length}건</b></li>`).join('');
+
+// ---- Speaks your stack: 모눈종이 위 기술 상자 ----
+(() => {
+  // 상자에 들어가도록 긴 이름은 줄여 쓴다
+  const SHORT = { '전자정부프레임워크': 'eGovFrame' };
+  const top = ranked.slice(0, 7).map(([k]) => SHORT[k] ?? k);
+  const spots = [[16, 18], [118, 16], [220, 26], [26, 78], [134, 74], [222, 90], [40, 136], [170, 134]];
+  // 글자 폭 어림값: 영문·숫자 7.4px, 그 밖(한글) 12px
+  const tw = t => [...t].reduce((a, c) => a + (c.charCodeAt(0) < 128 ? 7.4 : 12), 0);
+  let s = `<rect x="4" y="4" width="312" height="186" rx="6" fill="url(#gridp)" stroke="${INK}"/>`;
+  spots.forEach(([x, y], i) => {
+    const label = top[i] ?? '+', w = Math.max(label === '+' ? 36 : 62, tw(label) + 24), fill = i % 3 === 0 ? 'url(#d3)' : '#fff';
+    s += `<rect x="${x + 4}" y="${y + 4}" width="${w}" height="34" fill="${INK}"/>`;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="34" fill="${fill}" stroke="${INK}"/>`;
+    s += `<rect x="${x + w / 2 - tw(label) / 2 - 5}" y="${y + 9}" width="${tw(label) + 10}" height="16" fill="#fff"/>`;
+    s += `<text x="${x + w / 2}" y="${y + 21.5}" text-anchor="middle" font-size="12" fill="${INK}">${esc(label)}</text>`;
+  });
+  $('boxes').innerHTML = s;
+})();
+
+// ---- Now building: 바닥에 놓인 티켓 ----
+$('now-t').innerHTML = `<b>${esc(cur.name)}</b> · ${esc(cur.client)} 발주 · ${esc(cur.company)} ${cur.pos}<br><span class="mono">${fmt(cur.from)}부터 ${cur.m}개월째</span>`;
+$('now-tags').innerHTML = tags(cur.stack);
+(() => {
+  const W = 230, H = 96, T = 8;
+  let path = `M0 0H${W}`;
+  for (let y = 0; y < H; y += T) path += `L${W - 7} ${y + T / 2}L${W} ${y + T}`;
+  path += `H0`;
+  for (let y = H; y > 0; y -= T) path += `L7 ${y - T / 2}L0 ${y - T}`;
+  path += 'Z';
+  const s = `<g transform="${plane(0)}">
+    <path d="${path}" transform="translate(5 5)" fill="${INK}"/>
+    <path d="${path}" fill="#fff" stroke="${INK}" stroke-width="1.1"/>
+    <rect x="12" y="8" width="44" height="${H - 16}" fill="url(#d1)"/>
+    <text x="70" y="36" font-size="22" font-weight="600" fill="${ORANGE}">NOW</text>
+    <text x="70" y="60" font-size="14" font-weight="600" fill="${INK}">${esc(cur.name)}</text>
+    <text x="70" y="80" font-size="11" fill="${INK}">${fmt(cur.from)} →</text>
+  </g>`;
+  fit($('ticket'), s, [iso(0, H + 5), iso(W + 5, 0), iso(W + 5, H + 5), iso(0, 0)]);
+})();
+
+// ---- Domains: 산업군별 참여 개월을 기둥 높이로 ----
+const bySect = Object.keys(SECT).map(s => ({ s, m: items.filter(it => it.sec === s).reduce((a, it) => a + it.m, 0), n: items.filter(it => it.sec === s).length }));
+$('dom').innerHTML = bySect.map(d => `<li class="leader">${SECT[d.s].name}<b>${Math.round(100 * d.m / totalM)}% · ${d.m}개월</b></li>`).join('');
+(() => {
+  const maxM = Math.max(...bySect.map(d => d.m));
+  let s = '', pts = [];
+  bySect.forEach((d, i) => {
+    const x = i * 44, h = 16 + 120 * d.m / maxM;
+    s += box(x, 0, 28, 28, 0, h, '#fff', SECT[d.s].fill, 'url(#d3)');
+    pts.push(iso(x, 28), iso(x + 28, 0, h), iso(x + 28, 28));
+  });
+  fit($('bars'), s, pts);
+})();
+
+// ---- Step by step: 같은 직위가 이어지는 구간을 한 계단으로 ----
+(() => {
+  const steps = [];
+  for (const it of items) {
+    const last = steps.at(-1);
+    if (last && last.pos === it.pos) { last.to = it.to; last.n++; }
+    else steps.push({ pos: it.pos, from: it.from, to: it.to, n: 1 });
+  }
+  // 계단 그림은 라벨 없이 두고(좁은 계단 위에서 글자가 겹친다), 직위와 연도는 위 목록에 쓴다. 맨 위 칸이 지금.
+  const SW = 34, SD = 64, SH = 18;
+  let s = '', pts = [];
+  steps.forEach((st, i) => {
+    const x = i * SW, h = (i + 1) * SH, last = i === steps.length - 1;
+    s += box(x, 0, SW, SD, 0, h, last ? ORANGE : '#fff', '#fff', 'url(#d3)');
+    pts.push(iso(x, SD), iso(x + SW, 0, h), iso(x + SW, SD));
+  });
+  fit($('stairs'), s, pts);
+  $('steps').innerHTML = steps.map((st, i) => {
+    const a = fmt(st.from).slice(0, 4), b = st.to ? fmt(st.to).slice(0, 4) : 'now';
+    return `<li class="leader"${i === steps.length - 1 ? ` style="color:${ORANGE}"` : ''}>${st.pos}<b>${a === b ? a : `${a}–${b}`} · ${st.n}건</b></li>`;
+  }).join('');
+})();
+
+// ---- Worked with ----
+const cl = {};
+for (const it of items) cl[it.client] = (cl[it.client] || 0) + 1;
+$('clients').innerHTML = Object.entries(cl).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<li class="leader">${esc(c)}<b>${n}</b></li>`).join('');
+
+// ---- Career map: 연도 구역 미니어처 ----
+(() => {
+  const C = 46, G = 12;
+  let s = '', pts = [];
+  for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) {
+    const x = i * (C + G), y = j * (C + G), hot = j === 1 && i === 3;
+    s += `<g transform="${plane(0)}"><rect x="${x}" y="${y}" width="${C}" height="${C}" rx="6" fill="${hot ? 'url(#d2)' : '#fff'}" stroke="${INK}"/></g>`;
+    pts.push(iso(x, y + C), iso(x + C, y), iso(x + C, y + C), iso(x, y));
+  }
+  for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) {
+    const x = i * (C + G) + 14, y = j * (C + G) + 14, h = 10 + ((i * 7 + j * 3) % 4) * 9;
+    s += box(x, y, 18, 18, 0, h, (j === 1 && i === 3) ? ORANGE : '#fff');
+    pts.push(iso(x + 18, y, h));
+  }
+  fit($('mini'), s, pts);
+})();
+
+// ---- Stack timeline: 기술마다 쓴 기간을 한 줄 막대로. 4개월 이하의 틈은 이어 붙인다. ----
+(() => {
+  const T0 = firstY * 12, T1 = nowM + 1, pct = m => ((m - T0) / (T1 - T0) * 100).toFixed(2);
+  const first = k => Math.min(...items.filter(it => it.keys.includes(k)).map(it => it.a));
+  const keys = ranked.filter(([, n]) => n >= 2).map(([k]) => k).sort((a, b) => first(a) - first(b));
+  let h = `<div class="axis"><span></span><div class="yrs">${[2007, 2010, 2013, 2016, 2019, 2022, 2025].map(y => `<span style="left:${pct(y * 12)}%">${y}</span>`).join('')}</div></div>`;
+  for (const k of keys) {
+    const ms = [...new Set(items.filter(it => it.keys.includes(k)).flatMap(it => Array.from({ length: it.m }, (_, i) => it.a + i)))].sort((a, b) => a - b);
+    const spans = [];
+    for (const m of ms) { const l = spans.at(-1); if (l && m - l[1] <= 4) l[1] = m; else spans.push([m, m]); }
+    h += `<div class="river"><b title="${esc(k)}">${esc(k)}</b><div class="lane">${spans.map(([a, b]) =>
+      `<i${b >= nowM ? ' class="now"' : ''} style="left:${pct(a)}%;width:${pct(T0 + b - a + 1)}%"></i>`).join('')}</div></div>`;
+  }
+  $('rivers').innerHTML = h;
+})();
+
+// ---- Selected work: 칸마다 그 프로젝트의 탑 선화 ----
+$('picks').innerHTML = PICKS.map(nums => {
+  const list = nums.map(n => items[n - 1]), it = list[0], m = list.reduce((a, x) => a + x.m, 0);
+  return `<article class="pick">
+    <div class="art"><svg data-u="${Math.max(1, Math.ceil(m / 3))}" data-now="${it.to ? '' : 1}" data-fill="${SECT[it.sec].fill}" aria-hidden="true"></svg></div>
+    <div class="txt">
+      <div class="meta">No.${nums.map(n => String(n).padStart(2, '0')).join('·')} · ${m}개월</div>
+      <b>${esc(it.name)}</b>
+      <div class="meta">${list.map(period).join(', ')}</div>
+      <div class="meta">${esc(it.client)} 발주 · ${esc(it.company)}</div>
+      <div class="tags">${tags(it.stack)}</div>
+    </div>
+  </article>`;
+}).join('');
+for (const svg of document.querySelectorAll('.pick svg')) {
+  const u = +svg.dataset.u, FP = 44, UH = 10, h = u * UH;
+  let s = `<g transform="${plane(0)}"><rect x="-16" y="-16" width="${FP + 32}" height="${FP + 32}" rx="8" fill="url(#gridp)" stroke="${INK}"/></g>`;
+  s += box(0, 0, FP, FP, 0, h, svg.dataset.now ? ORANGE : '#fff', '#fff', svg.dataset.fill);
+  for (let q = 1; q < u; q++) s += `<polyline points="${poly([iso(0, FP, q * UH), iso(FP, FP, q * UH), iso(FP, 0, q * UH)])}" fill="none" stroke="${INK}" stroke-width=".6"/>`;
+  for (let q = 0; q < u; q++) {
+    const z0 = q * UH + 3, z1 = q * UH + 7;
+    s += `<polygon points="${poly([iso(14, FP, z0), iso(30, FP, z0), iso(30, FP, z1), iso(14, FP, z1)])}" fill="${INK}"/>`;
+  }
+  fit(svg, s, [iso(-16, FP + 16), iso(FP + 16, -16), iso(FP + 16, FP + 16), iso(0, 0, h)]);
+}
+
+// ---- All projects: 시기별로 묶어 모두 펼쳐 둔다(접을 수는 있다) ----
+$('all-n').textContent = items.length;
+$('history').innerHTML = ERAS.map(e => {
+  const list = inEra(e), m = list.reduce((a, it) => a + it.m, 0);
+  return `<details open>
+    <summary><span class="yr">${e.from}–${e.to ?? 'now'}</span><strong>${e.title}</strong><span class="cnt">${list.length}건 · ${m}개월</span></summary>
+    ${list.map(it => `<div class="row${it.to ? '' : ' now'}"><span class="d"></span><span class="p">${period(it)}</span><span>${esc(it.name)}</span><span class="c">${esc(it.client)}</span><span class="m">${it.m}개월</span></div>`).join('')}
+  </details>`;
+}).join('');
+
+// ---- 모션: 화면에 들어온 타일에 .in 을 붙이고, whoami 터미널을 타이핑한다. ----
+// 위에서 모든 타일 내용을 채운 뒤에 실행해야 한다. 동작 줄이기를 켠 사용자는 건너뛴다(CSS 쪽도 같은 조건).
+if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  // 형제 중 몇 번째인지를 --i 로 넘겨 CSS 가 그만큼 늦게 시작하게 한다
+  for (const el of document.querySelectorAll('.leader, .river, .row, .pick, #plates g')) el.style.setProperty('--i', [...el.parentNode.children].indexOf(el));
+  document.documentElement.classList.add('reveal');
+  // 타일이 화면 아래 10% 선을 넘어 들어오면 한 번만 나타낸다
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -10% 0px' });
+  for (const tile of document.querySelectorAll('.tile')) io.observe(tile);
+
+  // 터미널 줄을 위에서부터 차례로 보인다. 글자가 있는 명령 줄은 한 글자씩 친다.
+  // 자리를 차지한 채 숨겨(visibility) 타이핑 중에 타일 높이가 변하지 않게 한다.
+  const sleep = ms => new Promise(done => setTimeout(done, ms));
+  (async () => {
+    const lines = [...document.querySelector('.who .term').children];
+    for (const el of lines) el.style.visibility = 'hidden';
+    await sleep(600);
+    for (const el of lines) {
+      el.style.visibility = '';
+      el.classList.add('go');
+      const text = el.textContent;
+      // 글자가 없는 마지막 명령 줄은 커서(span)만 들어 있어 textContent 를 건드리면 커서가 지워진다
+      if (!el.matches('.cmd') || !text) { await sleep(300); continue; }
+      for (let n = 0; n <= text.length; n++) { el.textContent = text.slice(0, n); await sleep(55); }
+    }
+  })();
+}
+</script>

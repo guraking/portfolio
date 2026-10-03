@@ -283,7 +283,7 @@
 
 <script>
 // [프로젝트, 시작 YY.MM, 종료 YY.MM | null(진행 중), 발주처, 근무회사, 직위, 역할, 산업군, 스택]
-// portfolio01.html 과 같은 데이터다. 이력이 바뀌면 두 파일을 함께 고친다.
+// map.html 과 같은 데이터다. 이력이 바뀌면 두 파일을 함께 고친다.
 const P = [
   ['통합생산관리시스템 1차 운영', '07.02', '07.12', '금호석유', '버츄얼리드', '사원', '유지보수', 'mfg', ['JSP', 'Oracle']],
   ['통합생산관리시스템 2차 운영', '08.01', '08.12', '금호석유', '버츄얼리드', '사원', '유지보수', 'mfg', ['JSP', 'Oracle']],
@@ -320,7 +320,7 @@ const SECT = {
   telco:  { name: '통신·미디어', fill: 'url(#hatch)' },
   biz:    { name: '금융·교육·IT', fill: 'url(#d3)' },
 };
-// 시작 연도로 묶는다. to 가 null 이면 현재까지. portfolio01.html 의 시기 구분과 같다.
+// 시작 연도로 묶는다. to 가 null 이면 현재까지. map.html 의 시기 구분과 같다.
 const ERAS = [
   { from: 2007, to: 2010, title: '운영·유지보수' },
   { from: 2011, to: 2014, title: '공공·미디어 SI' },
@@ -352,7 +352,7 @@ const count = {};
 for (const it of items) for (const k of it.keys) count[k] = (count[k] || 0) + 1;
 const ranked = Object.entries(count).sort((a, b) => b[1] - a[1]);
 
-// ---- 아이소메트릭 선화 도우미 (2:1 투영, portfolio01 과 같다) ----
+// ---- 아이소메트릭 선화 도우미 (2:1 투영, map 과 같다) ----
 const INK = '#151515', BLUE = '#2f5bff', ORANGE = '#ff5a1f';
 const iso = (x, y, z = 0) => [x - y, (x + y) / 2 - z];
 const poly = pts => pts.map(p => p.map(v => +v.toFixed(1)).join(',')).join(' ');
